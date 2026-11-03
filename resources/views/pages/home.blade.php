@@ -1,246 +1,122 @@
 @extends('layouts.app')
 @section('title', 'Автошкола Мартин — Возете со Самодоверба | Скопје')
-@section('description', 'Автошкола Мартин во Скопје — над 33 години искуство, 15.000+ кандидати и 12 лиценцирани инструктори. Учете за живот, не за испит.')
+@section('description', 'Автошкола Мартин во Скопје — над 34 години искуство, 15.000+ кандидати и 12 лиценцирани инструктори. Учете за живот, не за испит.')
 @section('nav', 'home')
 @section('content')
-<section class="home-stage" id="homeStage" aria-roledescription="carousel" aria-label="Најважни информации" tabindex="0">
-  <div class="home-aurora" aria-hidden="true"></div>
+<!-- ── Categories (first thing visitors see) ─────────────────────── -->
+<section class="section-dark cats-first" id="kategorii" aria-labelledby="catsHeading">
 
-  <div class="container home-intro">
-    <div class="home-copy-stack">
-      <article class="home-copy is-active" data-tone="photo">
-        <p class="home-kicker">Автошкола Мартин · Скопје</p>
-        <h1 class="home-title">Учи за цел живот,<br><span>не за испит</span></h1>
-        <p class="home-lead">Над 33 години во центарот на Скопје. Лиценцирани инструктори, современа флота и обука што останува и по испитот.</p>
-        <div class="home-actions">
-          <a href="{{ route('contact') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-phone" aria-hidden="true"></i> Контактирај нè</a>
-          <a href="#kategorii" class="btn btn-outline btn-lg">Одбери категорија</a>
-        </div>
-      </article>
-
-      <article class="home-copy" data-tone="photo" aria-hidden="true">
-        <p class="home-kicker">Нашата флота</p>
-        <h2 class="home-title">Возила подготвени<br><span>за секој час</span></h2>
-        <p class="home-lead">Citroën, Peugeot и Renault со серво волан, клима и ABS. Обука на полигон и во сообраќај, со инструктор до вас.</p>
-        <div class="home-actions">
-          <a href="{{ route('category', 'b-kategorija') }}" class="btn btn-primary btn-lg">Б категорија</a>
-          <a href="{{ route('contact') }}" class="btn btn-outline btn-lg">Контакт</a>
-        </div>
-      </article>
-
-      <article class="home-copy" data-tone="light" aria-hidden="true">
-        <p class="home-kicker">Б автоматик</p>
-        <h2 class="home-title">Обука со<br><span>автоматски менувач</span></h2>
-        <p class="home-lead">Закажете обука на Фиат 500 со инструктор Стефан. Истата патека до дозвола, со автоматски менувач.</p>
-        <div class="home-actions">
-          <a href="{{ route('category', 'b-automatik') }}" class="btn btn-primary btn-lg">Повеќе за Б автоматик</a>
-          <a href="{{ route('contact') }}" class="btn btn-outline btn-lg">Контактирај нè</a>
-        </div>
-      </article>
-
-      <article class="home-copy" data-tone="dark" aria-hidden="true">
-        <p class="home-kicker">А1 категорија</p>
-        <h2 class="home-title">Уписите се<br><span>отпочнати</span></h2>
-        <p class="home-lead">Категорија А1 со автоматски менувач. Потребни се возачка за Б најмалку 5 години, лекарско уверение и потврда дека нема забрана.</p>
-        <div class="home-actions">
-          <a href="{{ route('category', 'a1-kategorija') }}" class="btn btn-primary btn-lg">А1 категорија</a>
-          <a href="tel:071251259" class="btn btn-outline btn-lg"><i class="fa-solid fa-phone" aria-hidden="true"></i> 071-251-259</a>
-        </div>
-      </article>
-
-      <article class="home-copy" data-tone="photo" aria-hidden="true">
-        <p class="home-kicker">Известување</p>
-        <h2 class="home-title">Субвенции за<br><span>млади возачи</span></h2>
-        <p class="home-lead">Млади жители од општина Центар и Кисела Вода можат да добијат поддршка за полагање на Б категорија.</p>
-        <div class="home-actions">
-          <a href="{{ route('blog.show', 'subvencii-na-mladi-lica-od-opshtina-centar-za-obuka-za-b-kategorija') }}" class="btn btn-primary btn-lg">Прочитај повеќе</a>
-          <a href="{{ route('contact') }}" class="btn btn-outline btn-lg">Прашај нè</a>
-        </div>
-      </article>
-    </div>
-
-    <ul class="home-metrics">
-      <li>
-        <strong><span data-count="33" data-suffix="+">33+</span></strong>
-        <span>години искуство</span>
-      </li>
-      <li>
-        <strong><span data-count="15000" data-suffix="+">15.000+</span></strong>
-        <span>обучени кандидати</span>
-      </li>
-      <li>
-        <strong><span data-count="12">12</span></strong>
-        <span>лиценцирани инструктори</span>
-      </li>
-      <li>
-        <strong><span data-count="10">10</span></strong>
-        <span>возачки категории</span>
-      </li>
-    </ul>
-  </div>
-
-  <div class="home-visual">
-    <div class="home-screen" data-tone="photo">
-      <img class="is-active" data-tone="photo" src="{{ asset('images/home/hero-team.jpg') }}" alt="Инструктори и возила на Автошкола Мартин" width="1920" height="540" fetchpriority="high">
-      <img data-tone="photo" src="{{ asset('images/home/hero-fleet.jpg') }}" alt="Автомобили за обука на Автошкола Мартин" width="1920" height="540">
-      <img class="is-graphic" data-tone="light" src="{{ asset('images/home/hero-auto.jpg') }}" alt="Фиат 500 за обука со автоматски менувач, инструктор Стефан" width="1920" height="540">
-      <img class="is-graphic" data-tone="dark" src="{{ asset('images/home/hero-a1.jpg') }}" alt="Уписи за категорија А1 со автоматски менувач" width="1920" height="540">
-      <img data-tone="photo" src="{{ asset('images/home/hero-subsidy.jpg') }}" alt="Субвенции за млади од општина Центар и Кисела Вода" width="1920" height="540">
-      <div class="home-screen-shade" aria-hidden="true"></div>
-      <div class="home-progress" aria-hidden="true"><span></span></div>
-    </div>
-    <div class="container home-toolbar">
-      <div class="home-controls">
-        <button type="button" class="home-nav" data-dir="prev" aria-label="Претходна информација"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
-        <div class="home-dots" role="tablist" aria-label="Информации"></div>
-        <button type="button" class="home-nav" data-dir="next" aria-label="Следна информација"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
-        <button type="button" class="home-nav home-pause" aria-pressed="false" aria-label="Паузирај"><i class="fa-solid fa-pause" aria-hidden="true"></i></button>
-        <p class="home-index"><span data-home-index>01</span><span>/ 05</span></p>
-      </div>
-    </div>
-  </div>
-  <p class="sr-only" aria-live="polite" data-home-live></p>
-</section>
-
-<section class="drive" id="kategorii" aria-labelledby="driveHeading">
   <div class="container">
-    <div class="drive-head">
-      <div>
-        <div class="section-tag">Категории</div>
-        <h2 class="section-heading" id="driveHeading">Одберете ја<br>вашата обука</h2>
+    <div class="highlight-carousel" id="highlightCarousel" data-interval="3000" tabindex="0" aria-label="Најважни информации">
+      <div class="highlight-track">
+        <article class="highlight-slide is-active">
+          <img src="{{ asset('images/home/hero-team.jpg') }}" alt="Инструктори и возила на Автошкола Мартин">
+          <div class="highlight-copy">
+            <span>Автошкола Мартин</span>
+            <h2>Возете со самодоверба</h2>
+            <a href="{{ route('contact') }}">Контактирај нè</a>
+          </div>
+        </article>
+        <article class="highlight-slide">
+          <img src="{{ asset('images/home/hero-fleet.jpg') }}" alt="Возила на Автошкола Мартин">
+          <div class="highlight-copy">
+            <span>Локација</span>
+            <h2>Во центарот на Скопје</h2>
+            <a href="{{ route('contact') }}">Како да нè најдете</a>
+          </div>
+        </article>
+        <article class="highlight-slide">
+          <img src="{{ asset('images/home/hero-a1.jpg') }}" alt="Подготовка за Е-Тест">
+          <div class="highlight-copy">
+            <span>Е-Тест</span>
+            <h2>Подготовка за теоретскиот испит</h2>
+            <a href="{{ route('etest') }}">Повеќе за Е-Тест</a>
+          </div>
+        </article>
+        <article class="highlight-slide">
+          <img src="{{ asset('images/home/hero-auto.jpg') }}" alt="Флексибилни термини за обука">
+          <div class="highlight-copy">
+            <span>Термини и плаќање</span>
+            <h2>Утро, вечер и викенд</h2>
+            <a href="tel:071251259">071-251-259</a>
+          </div>
+        </article>
       </div>
-      <p>Автомобил, мотор, камион или автобус. Секоја картичка ја отвора страницата со услови, возила и тек на обука.</p>
+      <button type="button" class="highlight-btn highlight-prev" data-dir="prev" aria-label="Претходен слајд"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+      <div class="highlight-dots" role="tablist" aria-label="Слајдови"></div>
+      <button type="button" class="highlight-btn highlight-next" data-dir="next" aria-label="Следен слајд"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
     </div>
-
-    <div class="drive-grid">
-      <p class="drive-label">Автомобили</p>
-
-      <a class="drive-card is-feature" href="{{ route('category', 'b-kategorija') }}">
-        <img src="{{ asset('images/home/cat-b.jpg') }}" alt="" width="750" height="450">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">Б</span>
-        <span class="drive-body">
-          <span class="drive-name">Патнички автомобил</span>
-          <span class="drive-desc">Рачен менувач · Citroën, Peugeot, Renault · од 18 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true">Детали <i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card" href="{{ route('category', 'b-automatik') }}">
-        <img src="{{ asset('images/home/cat-b-auto.jpg') }}" alt="" width="700" height="400">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">Б</span>
-        <span class="drive-body">
-          <span class="drive-name">Б автоматик</span>
-          <span class="drive-desc">Фиат 500 · автоматски менувач</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card" href="{{ route('category', 'be-kategorija') }}">
-        <img src="{{ asset('images/home/cat-be.jpg') }}" alt="" width="750" height="450">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">БЕ</span>
-        <span class="drive-body">
-          <span class="drive-name">Автомобил со приколка</span>
-          <span class="drive-desc">Seat Ibiza · потребна Б категорија</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <p class="drive-label">Мотоцикли</p>
-
-      <a class="drive-card" href="{{ route('category', 'a-kategorija') }}">
-        <img src="{{ asset('images/home/cat-a.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">A</span>
-        <span class="drive-body">
-          <span class="drive-name">Без ограничување</span>
-          <span class="drive-desc">Тежок мотоцикл · од 23,5 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card" href="{{ route('category', 'a2-kategorija') }}">
-        <img src="{{ asset('images/home/cat-a2.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">A2</span>
-        <span class="drive-body">
-          <span class="drive-name">Средна класа</span>
-          <span class="drive-desc">До 35 kW · од 18 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card" href="{{ route('category', 'a1-kategorija') }}">
-        <img src="{{ asset('images/home/cat-a1.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">A1</span>
-        <span class="drive-body">
-          <span class="drive-name">Лесен мотоцикл</span>
-          <span class="drive-desc">До 125 cc · од 16 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card is-studio" href="{{ route('category', 'am-kategorija') }}">
-        <img src="{{ asset('images/home/cat-am.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">AM</span>
-        <span class="drive-body">
-          <span class="drive-name">Мопед</span>
-          <span class="drive-desc">До 45 km/h · од 16 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <p class="drive-label">Камиони и автобуси</p>
-
-      <a class="drive-card" href="{{ route('category', 'c-kategorija') }}">
-        <img src="{{ asset('images/home/cat-c.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">Ц</span>
-        <span class="drive-body">
-          <span class="drive-name">Товарен камион</span>
-          <span class="drive-desc">Mercedes Atego · од 20,5 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card" href="{{ route('category', 'ce-kategorija') }}">
-        <img src="{{ asset('images/home/cat-ce.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">ЦЕ</span>
-        <span class="drive-body">
-          <span class="drive-name">Камион со приколка</span>
-          <span class="drive-desc">Потребна Ц категорија</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-
-      <a class="drive-card" href="{{ route('category', 'd-kategorija') }}">
-        <img src="{{ asset('images/home/cat-d.jpg') }}" alt="" width="750" height="450" loading="lazy">
-        <span class="drive-shade" aria-hidden="true"></span>
-        <span class="drive-code">Д</span>
-        <span class="drive-body">
-          <span class="drive-name">Автобус</span>
-          <span class="drive-desc">Патнички превоз · од 23,5 години</span>
-        </span>
-        <span class="drive-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
+    <div class="text-center" style="margin-bottom:56px;">
+      <h2 id="catsHeading">Категории за кои вршиме обука</h2>
+      <p style="color:rgba(255,255,255,.55);margin:16px auto 0;max-width:520px;font-size:1.05rem;">Без разлика дали сакате да возите мотор, автомобил, камион или автобус ние сме тука.</p>
+    </div>
+    <div class="cats-grid">
+      <a href="{{ route('category', 'a-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A</div><div class="cat-desc">Мотоцикл без ограничување</div></a>
+      <a href="{{ route('category', 'a2-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A2</div><div class="cat-desc">Мотоцикл средна класа</div></a>
+      <a href="{{ route('category', 'a1-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A1</div><div class="cat-desc">Лесен мотоцикл</div></a>
+      <a href="{{ route('category', 'am-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-bicycle" aria-hidden="true"></i></div><div class="cat-label">AM</div><div class="cat-desc">Мопед / ниска класа</div></a>
+      <a href="{{ route('category', 'b-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б</div><div class="cat-desc">Патнички автомобил</div></a>
+      <a href="{{ route('category', 'b-automatik') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б автоматик</div><div class="cat-desc">Автоматски менувач</div></a>
+      <a href="{{ route('category', 'be-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-truck-pickup" aria-hidden="true"></i></div><div class="cat-label">БE</div><div class="cat-desc">Автомобил со приколка</div></a>
+      <a href="{{ route('category', 'c-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-truck" aria-hidden="true"></i></div><div class="cat-label">Ц</div><div class="cat-desc">Товарен камион</div></a>
+      <a href="{{ route('category', 'd-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-bus" aria-hidden="true"></i></div><div class="cat-label">Д</div><div class="cat-desc">Автобус / патнички превоз</div></a>
+      <a href="{{ route('category', 'ce-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-truck-moving" aria-hidden="true"></i></div><div class="cat-label">ЦЕ</div><div class="cat-desc">Камион + приколка</div></a>
+    </div>
+    <div class="cats-cta">
+      <a href="{{ route('categories') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Погледни сите категории</a>
     </div>
   </div>
 </section>
 
+<!-- ── Stats Bar ─────────────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+        <div class="stat-text">
+          <div class="count"><span data-count="34" data-suffix="+">34+</span></div>
+          <div class="desc">Години искуство</div>
+        </div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
+        <div class="stat-text">
+          <div class="count"><span data-count="15000" data-suffix="+">15.000+</span></div>
+          <div class="desc">Обучени кандидати</div>
+        </div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-icon"><i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i></div>
+        <div class="stat-text">
+          <div class="count"><span data-count="12">12</span></div>
+          <div class="desc">Искусни инструктори</div>
+        </div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-icon"><i class="fa-solid fa-id-card" aria-hidden="true"></i></div>
+        <div class="stat-text">
+          <div class="count"><span data-count="10">10</span></div>
+          <div class="desc">Возачки категории</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── About ─────────────────────────────────────────────────────── -->
 <section>
   <div class="container">
     <div class="about-grid">
       <div class="about-visual reveal">
         <div class="about-img-wrap">
-          <img src="{{ asset('images/home/cat-b.jpg') }}" alt="Автомобил за обука на Автошкола Мартин" width="750" height="450" loading="lazy">
+          <img src="https://www.avtoskolamartin.mk/wp-content/uploads/2022/01/about.jpg"
+               loading="lazy" decoding="async"
+               onerror="this.style.display='none'" alt="Обука во Автошкола Мартин" style="width:100%;height:100%;object-fit:cover;">
+          <div class="about-img-placeholder"><i class="fa-solid fa-car-side" aria-hidden="true"></i></div>
         </div>
         <div class="about-badge">
-          <div class="badge-num">33+</div>
+          <div class="badge-num">34+</div>
           <div class="badge-text">Години<br>Искуство</div>
         </div>
       </div>
@@ -268,6 +144,7 @@
   </div>
 </section>
 
+<!-- ── Why Choose Us ─────────────────────────────────────────────── -->
 <section style="background:var(--bg-alt);">
   <div class="container">
     <div class="section-tag">Зошто Нас</div>
@@ -302,6 +179,7 @@
   </div>
 </section>
 
+<!-- ── CTA Banner ─────────────────────────────────────────────────── -->
 <div class="cta-banner">
   <div class="container">
     <div class="cta-inner">
@@ -316,6 +194,7 @@
   </div>
 </div>
 
+<!-- ── Blog Preview ─────────────────────────────────────────────── -->
 <section>
   <div class="container">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:48px;">

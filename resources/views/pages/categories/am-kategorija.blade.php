@@ -13,7 +13,7 @@
 <section>
   <div class="container cat-page">
     <div class="cat-page-main">
-<p class="cat-lead">Во категорија AM спаѓаат мопеди, мотокултиватор, односно возила на две или три тркала со максимална брзина која не надминува 45 km/h и лесни четирицикли. Возач-почетник не смее да управува возило во патниот сообраќај од 23 часот до 5 часот.</p>
+<p class="cat-lead">Во категорија AM спаѓаат мопеди, мотокултиватор, односно возила на две или три тркала со максимална брзина која не надминува 45 km/h и лесни четирицикли. Возач почетник не смее да управува возило во патниот сообраќај од 23 часот до 5 часот.</p>
 <h2>Услови и потребни документи</h2>
 <div class="cat-req-grid"><div class="cat-req-item"><i class="fa-solid fa-check"></i>лична карта</div><div class="cat-req-item"><i class="fa-solid fa-check"></i>лекарско уверение за AM категорија</div><div class="cat-req-item"><i class="fa-solid fa-check"></i>согласност од родителите</div><div class="cat-req-item"><i class="fa-solid fa-check"></i>прва помош</div><div class="cat-req-item"><i class="fa-solid fa-check"></i>завршено најмалку основно образование</div><div class="cat-req-item"><i class="fa-solid fa-check"></i>навршени 16 години</div></div>
 <h2>Обука</h2><p>Оспособувањето се состои од теоретска и практична настава.</p><div class="cat-train"><div class="cat-train-item"><strong>Теоретска настава</strong><p>12 наставни часа во просториите на автошколата, вкупно три дена. За AM обуката се состои само од теоретска настава.</p></div><div class="cat-train-item"><strong>Возачки испит</strong><p>Само теоретски дел. Тестовите се достапни на страницата Е-Тест.</p></div></div>
