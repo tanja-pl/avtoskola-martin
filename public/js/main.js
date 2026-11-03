@@ -95,7 +95,7 @@ function jsonHeaders() {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const val = Math.round(easeOut(progress) * target);
-      el.textContent = String(val).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + suffix;
+      el.textContent = val.toLocaleString() + suffix;
       if (progress < 1) requestAnimationFrame(update);
     }
     requestAnimationFrame(update);
@@ -254,126 +254,82 @@ function showToast(msg, isError) {
   });
 })();
 
-/* ── Homepage stage ────────────────────────────────────────────── */
+/* ── Homepage highlight carousel ───────────────────────────────── */
 (function () {
-  const root = document.getElementById('homeStage');
+  const root = document.getElementById('highlightCarousel');
   if (!root) return;
 
-  const copies = [...root.querySelectorAll('.home-copy')];
-  const images = [...root.querySelectorAll('.home-screen img')];
-  const screen = root.querySelector('.home-screen');
-  const dotsWrap = root.querySelector('.home-dots');
-  const indexEl = root.querySelector('[data-home-index]');
-  const live = root.querySelector('[data-home-live]');
-  const bar = root.querySelector('.home-progress span');
-  const pauseBtn = root.querySelector('.home-pause');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let index = 0;
-  let paused = reduceMotion;
-  let touchX = null;
+  const slides = [...root.querySelectorAll('.highlight-slide')];
+  const dotsWrap = root.querySelector('.highlight-dots');
+  if (slides.length < 2) return;
 
-  copies.forEach((copy, i) => {
+  let index = slides.findIndex((s) => s.classList.contains('is-active'));
+  if (index < 0) index = 0;
+  let timer = null;
+  const interval = parseInt(root.getAttribute('data-interval'), 10) || 3000;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) root.setAttribute('data-reduced', '');
+
+  slides.forEach((_, i) => {
     const dot = document.createElement('button');
     dot.type = 'button';
-    dot.className = 'home-dot' + (i === 0 ? ' is-active' : '');
-    dot.setAttribute('role', 'tab');
-    dot.setAttribute('aria-label', 'Информација ' + (i + 1));
-    dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-    dot.addEventListener('click', () => goTo(i));
+    dot.className = 'highlight-dot' + (i === index ? ' is-active' : '');
+    dot.setAttribute('aria-label', 'Слајд ' + (i + 1));
+    dot.addEventListener('click', () => goTo(i, true));
     dotsWrap.appendChild(dot);
-    copy.querySelectorAll('a').forEach((link) => {
-      if (i !== 0) link.setAttribute('tabindex', '-1');
-    });
   });
 
-  function applyTone(tone) {
-    screen.dataset.tone = tone || 'photo';
-    screen.classList.toggle('is-graphic', tone === 'light' || tone === 'dark');
-    screen.classList.toggle('is-light', tone === 'light');
+  function goTo(n, user) {
+    slides[index].classList.remove('is-active');
+    dotsWrap.children[index].classList.remove('is-active');
+    index = (n + slides.length) % slides.length;
+    slides[index].classList.add('is-active');
+    dotsWrap.children[index].classList.add('is-active');
+    if (user) restart();
   }
 
-  function goTo(n) {
-    const next = (n + copies.length) % copies.length;
-    if (next === index) {
-      restartProgress();
-      return;
-    }
-    const prev = index;
-    index = next;
-
-    copies.forEach((copy, i) => {
-      const on = i === index;
-      copy.classList.toggle('is-active', on);
-      copy.setAttribute('aria-hidden', on ? 'false' : 'true');
-      copy.querySelectorAll('a').forEach((link) => {
-        if (on) link.removeAttribute('tabindex');
-        else link.setAttribute('tabindex', '-1');
-      });
-    });
-    images.forEach((img, i) => {
-      img.classList.toggle('is-active', i === index);
-      img.classList.toggle('is-prev', i === prev);
-    });
-    [...dotsWrap.children].forEach((dot, i) => {
-      dot.classList.toggle('is-active', i === index);
-      dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
-    });
-    applyTone(images[index].dataset.tone);
-    if (indexEl) indexEl.textContent = String(index + 1).padStart(2, '0');
-    const title = copies[index].querySelector('.home-title');
-    if (live && title) live.textContent = title.innerText.replace(/\s+/g, ' ').trim();
-    restartProgress();
+  function restart() {
+    if (reduceMotion) return;
+    clearInterval(timer);
+    timer = setInterval(() => goTo(index + 1), interval);
   }
 
-  function restartProgress() {
-    if (!bar) return;
-    bar.classList.remove('is-run');
-    if (paused || reduceMotion) return;
-    void bar.offsetWidth;
-    bar.classList.add('is-run');
-  }
+  root.querySelector('[data-dir="prev"]').addEventListener('click', () => goTo(index - 1, true));
+  root.querySelector('[data-dir="next"]').addEventListener('click', () => goTo(index + 1, true));
 
-  if (bar) {
-    bar.addEventListener('animationend', () => {
-      if (!paused && !reduceMotion) goTo(index + 1);
-    });
-  }
-
-  root.querySelector('[data-dir="prev"]').addEventListener('click', () => goTo(index - 1));
-  root.querySelector('[data-dir="next"]').addEventListener('click', () => goTo(index + 1));
-
-  pauseBtn.addEventListener('click', () => {
-    paused = !paused;
-    pauseBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
-    pauseBtn.setAttribute('aria-label', paused ? 'Продолжи' : 'Паузирај');
-    pauseBtn.innerHTML = paused
-      ? '<i class="fa-solid fa-play" aria-hidden="true"></i>'
-      : '<i class="fa-solid fa-pause" aria-hidden="true"></i>';
-    root.classList.toggle('is-paused', paused);
-    restartProgress();
-  });
+  root.addEventListener('mouseenter', () => clearInterval(timer));
+  root.addEventListener('mouseleave', restart);
+  root.addEventListener('focusin', () => clearInterval(timer));
+  root.addEventListener('focusout', restart);
 
   root.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(index - 1); }
-    if (e.key === 'ArrowRight') { e.preventDefault(); goTo(index + 1); }
+    if (e.key === 'ArrowLeft') goTo(index - 1, true);
+    if (e.key === 'ArrowRight') goTo(index + 1, true);
   });
 
-  screen.addEventListener('touchstart', (e) => {
-    touchX = e.changedTouches[0].clientX;
-  }, { passive: true });
-  screen.addEventListener('touchend', (e) => {
-    if (touchX == null) return;
-    const dx = e.changedTouches[0].clientX - touchX;
-    if (Math.abs(dx) > 48) goTo(index + (dx < 0 ? 1 : -1));
-    touchX = null;
-  }, { passive: true });
+  if (!reduceMotion) restart();
+})();
 
-  root.addEventListener('mouseenter', () => root.classList.add('is-held'));
-  root.addEventListener('mouseleave', () => root.classList.remove('is-held'));
+/* ── Category fleet lightbox ───────────────────────────────────── */
+(function () {
+  const dialog = document.getElementById('fleetLightbox');
+  if (!dialog) return;
 
-  applyTone(images[0].dataset.tone);
-  if (reduceMotion) root.classList.add('is-paused');
-  else restartProgress();
+  const img = dialog.querySelector('img');
+  const caption = dialog.querySelector('p');
+
+  document.querySelectorAll('.cat-fleet-thumb').forEach((button) => {
+    button.addEventListener('click', () => {
+      img.src = button.dataset.full;
+      img.alt = button.dataset.caption;
+      caption.textContent = button.dataset.caption;
+      dialog.showModal();
+    });
+  });
+
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
 })();
 
 /* ── Active nav link highlight ─────────────────────────────────── */
