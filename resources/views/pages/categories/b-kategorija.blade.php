@@ -26,7 +26,7 @@
                     <div class="cat-req-item"><i class="fa-solid fa-check"></i>може и со 17 години и шест месеци, со
                         согласност од двајцата родители заверена на нотар</div>
                 </div>
-                <h2>Возило за обука и полагање</h2>
+                <h2>Возила за обука и полагање</h2>
                 <div class="cat-fleet-thumbs">
                     @foreach ([
                         ['b-1.png', 'Citroën C3'],

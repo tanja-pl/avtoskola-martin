@@ -52,15 +52,15 @@
     </div>
     <div class="cats-grid">
       <a href="{{ route('category', 'a-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A</div><div class="cat-desc">Мотоцикл без ограничување</div></a>
-      <a href="{{ route('category', 'a2-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A2</div><div class="cat-desc">Мотоцикл средна класа</div></a>
-      <a href="{{ route('category', 'a1-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A1</div><div class="cat-desc">Лесен мотоцикл</div></a>
-      <a href="{{ route('category', 'am-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-bicycle" aria-hidden="true"></i></div><div class="cat-label">AM</div><div class="cat-desc">Мопед / ниска класа</div></a>
+      <a href="{{ route('category', 'a2-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A2</div><div class="cat-desc">Мотоцикл средна класа до 35kW</div></a>
+      <a href="{{ route('category', 'a1-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A1</div><div class="cat-desc">Лесен мотоцикл до 125cc</div></a>
+      <a href="{{ route('category', 'am-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-bicycle" aria-hidden="true"></i></div><div class="cat-label">AM</div><div class="cat-desc">Мопед</div></a>
       <a href="{{ route('category', 'b-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б</div><div class="cat-desc">Патнички автомобил</div></a>
       <a href="{{ route('category', 'b-automatik') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б автоматик</div><div class="cat-desc">Автоматски менувач</div></a>
       <a href="{{ route('category', 'be-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-truck-pickup" aria-hidden="true"></i></div><div class="cat-label">БE</div><div class="cat-desc">Автомобил со приколка</div></a>
-      <a href="{{ route('category', 'c-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-truck" aria-hidden="true"></i></div><div class="cat-label">Ц</div><div class="cat-desc">Товарен камион</div></a>
-      <a href="{{ route('category', 'd-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-bus" aria-hidden="true"></i></div><div class="cat-label">Д</div><div class="cat-desc">Автобус / патнички превоз</div></a>
-      <a href="{{ route('category', 'ce-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-truck-moving" aria-hidden="true"></i></div><div class="cat-label">ЦЕ</div><div class="cat-desc">Камион + приколка</div></a>
+      <a href="{{ route('category', 'c-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-truck" aria-hidden="true"></i></div><div class="cat-label">Ц</div><div class="cat-desc">Камион</div></a>
+      <a href="{{ route('category', 'd-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-bus" aria-hidden="true"></i></div><div class="cat-label">Д</div><div class="cat-desc">Автобус</div></a>
+      <a href="{{ route('category', 'ce-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-truck-moving" aria-hidden="true"></i></div><div class="cat-label">ЦЕ</div><div class="cat-desc">Камион со приколка</div></a>
     </div>
     <div class="cats-cta">
       <a href="{{ route('categories') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Погледни сите категории</a>
