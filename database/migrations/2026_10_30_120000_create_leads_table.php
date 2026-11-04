@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone');
+            $table->string('name', 80);
+            $table->string('phone', 40);
             $table->string('question', 240)->nullable();
             $table->string('ip_hash', 64)->nullable();
             $table->string('source', 40)->default('chat');
