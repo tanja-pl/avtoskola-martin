@@ -20,7 +20,7 @@
       <div class="cat-detail-card reveal">
         <div class="cat-detail-header">
           <div class="cat-detail-icon-wrap"><i class="fa-solid fa-motorcycle" style="color:#FDDE1F;"></i></div>
-          <div><h3>AM</h3><p>Мопед и лесен мотоцикл</p></div>
+          <div><h3>AM</h3><p>Мопед до 50cc</p></div>
         </div>
         <div class="cat-detail-body">
           <p>Категорија AM дозволува управување со мопеди и лесни моторни велосипеди со максимална брзина до 45 km/h.</p>
@@ -38,7 +38,7 @@
       <div class="cat-detail-card reveal reveal-delay-1">
         <div class="cat-detail-header">
           <div class="cat-detail-icon-wrap"><i class="fa-solid fa-motorcycle" style="color:#FDDE1F;"></i></div>
-          <div><h3>A1</h3><p>Лесен мотоцикл</p></div>
+          <div><h3>A1</h3><p>Лесен мотоцикл до 125cc</p></div>
         </div>
         <div class="cat-detail-body">
           <p>Категорија A1 е наменета за мотоцикли до 125cc и максимална снага до 11 kW (15 KS).</p>
@@ -56,7 +56,7 @@
       <div class="cat-detail-card reveal reveal-delay-2">
         <div class="cat-detail-header">
           <div class="cat-detail-icon-wrap"><i class="fa-solid fa-motorcycle" style="color:#FDDE1F;"></i></div>
-          <div><h3>A2</h3><p>Средна класа мотоцикл</p></div>
+          <div><h3>A2</h3><p>Средна класа мотоцикл до 35kW</p></div>
         </div>
         <div class="cat-detail-body">
           <p>Категорија A2 овозможува управување со мотоцикли до 35 kW (47 KS) и однос снага/тежина до 0.2 kW/kg.</p>
@@ -74,7 +74,7 @@
       <div class="cat-detail-card reveal reveal-delay-3">
         <div class="cat-detail-header">
           <div class="cat-detail-icon-wrap"><i class="fa-solid fa-motorcycle" style="color:#FDDE1F;"></i></div>
-          <div><h3>A</h3><p>Тежок мотоцикл — без ограничување</p></div>
+          <div><h3>A</h3><p>Мотоцикл без ограничување</p></div>
         </div>
         <div class="cat-detail-body">
           <p>Категорија A е највисоката мотоциклска категорија, без ограничување на снагата на мотоциклот.</p>
@@ -158,7 +158,7 @@
       <div class="cat-detail-card reveal">
         <div class="cat-detail-header">
           <div class="cat-detail-icon-wrap"><i class="fa-solid fa-truck" style="color:#FDDE1F;"></i></div>
-          <div><h3>Ц</h3><p>Товарен камион</p></div>
+          <div><h3>Ц</h3><p>Камион</p></div>
         </div>
         <div class="cat-detail-body">
           <p>Категорија Ц дозволува управување со товарни моторни возила со максимална маса над 3.500 kg.</p>
