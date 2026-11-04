@@ -110,10 +110,9 @@
     <div class="about-grid">
       <div class="about-visual reveal">
         <div class="about-img-wrap">
-          <img src="https://www.avtoskolamartin.mk/wp-content/uploads/2022/01/about.jpg"
+          <img src="{{ asset('images/vehicles/b-1.png') }}"
                loading="lazy" decoding="async"
                onerror="this.style.display='none'" alt="Обука во Автошкола Мартин" style="width:100%;height:100%;object-fit:cover;">
-          <div class="about-img-placeholder"><i class="fa-solid fa-car-side" aria-hidden="true"></i></div>
         </div>
         <div class="about-badge">
           <div class="badge-num">34+</div>
