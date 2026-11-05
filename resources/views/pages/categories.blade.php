@@ -139,7 +139,7 @@
         <div class="cat-detail-body">
           <p>Категорија БE дозволува управување со автомобил (Б) во комбинација со приколка чија тежина надминува 750 kg.</p>
           <div class="cat-reqs">
-            <div class="cat-req-item"><i class="fa-solid fa-check"></i>Поседување на категорија B</div>
+            <div class="cat-req-item"><i class="fa-solid fa-check"></i>Поседување на категорија Б</div>
             <div class="cat-req-item"><i class="fa-solid fa-check"></i>Минимална возраст: 18 години</div>
             <div class="cat-req-item"><i class="fa-solid fa-check"></i>Специјализирана практична обука</div>
             <div class="cat-req-item"><i class="fa-solid fa-check"></i>Лекарски преглед</div>

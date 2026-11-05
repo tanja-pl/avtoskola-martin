@@ -139,7 +139,7 @@
       '<span class="am-chat-nudge-badge" aria-hidden="true">' + DRIVER_SVG + '</span>' +
       '<span class="am-chat-nudge-copy">' +
         '<span class="am-chat-nudge-kicker">Здраво</span>' +
-        '<span class="am-chat-nudge-text">Разговарајте со нашиот асистент</span>' +
+        '<span class="am-chat-nudge-text">Разговарајте со асистентот на Мартин</span>' +
       '</span>' +
       '<span class="am-chat-nudge-lane" aria-hidden="true">' +
         '<span class="am-chat-nudge-car">' +

@@ -1579,6 +1579,77 @@ section { padding: 104px 0; }
   border-radius: 16px;
   object-fit: contain;
 }
+.cat-instructors.cat-people.is-visible {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.cat-instructors.cat-people.is-visible .cat-person {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 10px 14px;
+  border-radius: 16px;
+  box-shadow: var(--sh-sm);
+}
+.cat-instructor-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--yellow-bg), transparent 42%),
+    var(--bg-soft);
+}
+.cat-instructors.cat-people.is-visible .cat-person img {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  max-height: none;
+  margin: 0;
+  border-radius: 10px;
+  object-fit: contain;
+  object-position: center center;
+  background: transparent;
+}
+.cat-instructors.cat-people.is-visible .cat-person h3 {
+  font-size: .9rem;
+  line-height: 1.3;
+  margin: 0 0 4px;
+  text-wrap: balance;
+}
+.cat-instructors.cat-people.is-visible .cat-person p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .75rem;
+  letter-spacing: .02em;
+}
+@media (max-width: 900px) {
+  .cat-instructors.cat-people.is-visible {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .cat-instructor-photo { width: min(100%, 140px); }
+}
+@media (max-width: 700px) {
+  .cat-instructors.cat-people.is-visible {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .cat-instructor-photo { width: min(100%, 132px); }
+}
+@media (max-width: 520px) {
+  .cat-instructors.cat-people.is-visible {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .cat-instructors.cat-people.is-visible .cat-person { padding: 10px 8px 12px; }
+  .cat-instructor-photo { width: min(100%, 136px); }
+}
 .cat-aside {
   position: sticky;
   top: calc(var(--nav-h) + 16px);
@@ -2410,7 +2481,15 @@ footer {
   text-transform: uppercase;
   color: rgba(255,255,255,.35);
 }
-.footer-brand p { font-size: .875rem; line-height: 1.7; margin-bottom: 24px; }
+.footer-brand p { font-size: .875rem; line-height: 1.7; margin-bottom: 16px; }
+.footer-map {
+  height: 180px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.footer-map iframe { width: 100%; height: 100%; border: 0; display: block; }
 
 .footer-heading {
   font-size: .7rem;
