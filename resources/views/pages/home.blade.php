@@ -11,35 +11,15 @@
       <div class="highlight-track">
         <article class="highlight-slide is-active">
           <img src="{{ asset('images/home/hero-team.jpg') }}" alt="Инструктори и возила на Автошкола Мартин">
-          <div class="highlight-copy">
-            <span>Автошкола Мартин</span>
-            <h2>Возете со самодоверба</h2>
-            <a href="{{ route('contact') }}">Контактирај нè</a>
-          </div>
         </article>
         <article class="highlight-slide">
           <img src="{{ asset('images/home/hero-fleet.jpg') }}" alt="Возила на Автошкола Мартин">
-          <div class="highlight-copy">
-            <span>Локација</span>
-            <h2>Во центарот на Скопје</h2>
-            <a href="{{ route('contact') }}">Како да нè најдете</a>
-          </div>
         </article>
         <article class="highlight-slide">
           <img src="{{ asset('images/home/hero-a1.jpg') }}" alt="Подготовка за Е-Тест">
-          <div class="highlight-copy">
-            <span>Е-Тест</span>
-            <h2>Подготовка за теоретскиот испит</h2>
-            <a href="{{ route('etest') }}">Повеќе за Е-Тест</a>
-          </div>
         </article>
         <article class="highlight-slide">
           <img src="{{ asset('images/home/hero-auto.jpg') }}" alt="Флексибилни термини за обука">
-          <div class="highlight-copy">
-            <span>Термини и плаќање</span>
-            <h2>Утро, вечер и викенд</h2>
-            <a href="tel:071251259">071-251-259</a>
-          </div>
         </article>
       </div>
       <button type="button" class="highlight-btn highlight-prev" data-dir="prev" aria-label="Претходен слајд"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>

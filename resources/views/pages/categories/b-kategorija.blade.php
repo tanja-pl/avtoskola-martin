@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Категорија B — Автошкола Мартин')
-@section('description', 'Категорија B во Автошкола Мартин Скопје — автомобил, услови и цена.')
+@section('title', 'Категорија Б — Автошкола Мартин')
+@section('description', 'Категорија Б во Автошкола Мартин Скопје — автомобил, услови и цена.')
 @section('nav', 'categories')
 @section('content')
     <div class="page-hero">
@@ -56,71 +56,29 @@
                     <img alt="">
                 </dialog>
                 <h2>Инструктори</h2>
-                <div class="cat-people is-visible">
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/stefan.png') }}" alt="Стефан Трајановски" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Стефан Трајановски</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/miki.png') }}" alt="Мики Трајановски" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Мики Трајановски</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/ljupco.png') }}" alt="Љупчо Костенцовски" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Љупчо Костенцовски</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/martin1.png') }}" alt="Мартин Трајановски" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Мартин Трајановски</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/igor.png') }}" alt="Игор Вичишки" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Игор Вичишки</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/zoki.png') }}" alt="Зоран Крстевски" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Зоран Крстевски</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/sase.jpg') }}" alt="Сашо Тодоровски" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Сашо Тодоровски</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/martina.jpg') }}" alt="Мартина Крстевска" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Мартина Крстевска</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person">
-                        <img src="{{ asset('images/instructors/cece.jpg') }}" alt="Светлана Спасовска" loading="lazy"
-                            onerror="this.style.display='none'">
-                        <h3>Светлана Спасовска</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person"><img src="{{ asset('images/instructors/bube.jpg') }}" alt="Љупка Илијоска"
-                            loading="lazy" onerror="this.style.display='none'">
-                        <h3>Љупка Илијоска</h3>
-                        <p>Инструктор</p>
-                    </article>
-                    <article class="cat-person"><img src="{{ asset('images/instructors/liljana.jpg') }}" alt="Лилјана Тодорова"
-                          loading="lazy" onerror="this.style.display='none'">
-                      <h3>Лилјана Тодорова</h3>
-                      <p>Инструктор</p>
-                  </article>
+                <div class="cat-people cat-instructors is-visible">
+                    @foreach ([
+                        ['stefan.png', 'Стефан Трајановски'],
+                        ['miki.png', 'Мики Трајановски'],
+                        ['ljupco.png', 'Љупчо Костенцовски'],
+                        ['martin1.png', 'Мартин Трајановски'],
+                        ['igor.png', 'Игор Вичишки'],
+                        ['zoki.png', 'Зоран Крстевски'],
+                        ['sase.jpg', 'Сашо Тодоровски'],
+                        ['martina.jpg', 'Мартина Крстевска'],
+                        ['cece.jpg', 'Светлана Спасовска'],
+                        ['bube.jpg', 'Љупка Илијоска'],
+                        ['liljana.jpg', 'Лилјана Тодорова'],
+                    ] as [$file, $name])
+                        <article class="cat-person">
+                            <div class="cat-instructor-photo">
+                                <img src="{{ asset('images/instructors/'.$file) }}" alt="{{ $name }}" loading="lazy"
+                                    onerror="this.style.display='none'">
+                            </div>
+                            <h3>{{ $name }}</h3>
+                            <p>Инструктор</p>
+                        </article>
+                    @endforeach
                 </div>
                 <h2>Обука</h2>
                 <p>Оспособувањето се состои од теоретска и практична настава.</p>
@@ -137,7 +95,7 @@
                 </div>
                 <h2>Возачки испит</h2>
                 <ul class="cat-exam">
-                    <li>Тестот за B има 31 прашање. Фонд: 621 прашање.</li>
+                    <li>Тестот за Б има 31 прашање. Фонд: 621 прашање.</li>
                     <li>Полигон: четири вежби.</li>
                     <li>Градска започнува од паркинг просторите пред Железничка станица, хотел Русија, поликлиника Јане
                         Сандански, Зоолошка градина (Центар) и сала Борис Трајковски (Карпош).

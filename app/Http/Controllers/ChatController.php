@@ -15,6 +15,7 @@ use function App\Support\Chat\checkRateLimits;
 use function App\Support\Chat\clientIp;
 use function App\Support\Chat\ensureContactAsk;
 use function App\Support\Chat\ensureLeadConfirmation;
+use function App\Support\Chat\ensureUnknownAsksForContact;
 use function App\Support\Chat\evaluateLead;
 use function App\Support\Chat\friendlyError;
 use function App\Support\Chat\isUnknownAnswer;
@@ -120,7 +121,17 @@ class ChatController extends Controller
             logUnanswered($message, $clientIp);
         }
 
-        $reply = ensureLeadConfirmation(ensureContactAsk(steerMissingDetailsToLead($result['reply'], $message, $lead), $lead), $lead);
+        $reply = ensureLeadConfirmation(
+            ensureContactAsk(
+                ensureUnknownAsksForContact(
+                    steerMissingDetailsToLead($result['reply'], $message, $lead),
+                    $message,
+                    $lead,
+                ),
+                $lead,
+            ),
+            $lead,
+        );
         if (assistantAskedForContact($reply)) {
             $lead['asked'] = true;
         }
@@ -135,7 +146,7 @@ class ChatController extends Controller
                 'captured' => ! empty($lead['captured']),
                 'declined' => ! empty($lead['declined']),
             ],
-            'images' => vehicleImagesForMessage($message),
+            'images' => vehicleImagesForMessage($message, $cleanHistory),
         ], 200, $conversation);
     }
 

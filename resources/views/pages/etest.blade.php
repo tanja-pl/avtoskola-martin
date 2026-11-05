@@ -119,7 +119,7 @@
           <div>
             <i class="fa-solid fa-truck" aria-hidden="true"></i>
             <strong>120</strong>
-            <span>прашања · Цена</span>
+            <span>прашања · Ц</span>
           </div>
           <div>
             <i class="fa-solid fa-bus" aria-hidden="true"></i>

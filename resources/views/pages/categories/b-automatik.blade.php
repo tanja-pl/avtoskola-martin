@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Категорија B автоматик — Автошкола Мартин')
+@section('title', 'Категорија Б автоматик — Автошкола Мартин')
 @section('description', 'B автоматик во Автошкола Мартин Скопје.')
 @section('nav', 'categories')
 @section('content')
@@ -8,14 +8,14 @@
             <div class="breadcrumb"><a href="{{ route('home') }}">Почетна</a><i class="fa-solid fa-chevron-right"></i><a
                     href="{{ route('categories') }}">Категории</a><i class="fa-solid fa-chevron-right"></i><span>B
                     автоматик</span></div>
-            <h1>Категорија B — автоматски менувач</h1>
+            <h1>Категорија Б — автоматски менувач</h1>
             <p>Обука за автомобил со автоматски менувач.</p>
         </div>
     </div>
     <section>
         <div class="container cat-page">
             <div class="cat-page-main">
-                <p class="cat-lead">Обука за патнички автомобил со автоматски менувач. Истите услови како категорија B, со
+                <p class="cat-lead">Обука за патнички автомобил со автоматски менувач. Истите услови како категорија Б, со
                     обука на автоматско возило.</p>
                 <h2>Услови и потребни документи</h2>
                 <div class="cat-req-grid">
@@ -59,7 +59,7 @@
                 </div>
                 <h2>Возачки испит</h2>
                 <ul class="cat-exam">
-                    <li>Тестот за B има 31 прашање. Фонд: 621 прашање.</li>
+                    <li>Тестот за Б има 31 прашање. Фонд: 621 прашање.</li>
                     <li>Полигон и градска според програмата за Б категорија.</li>
                 </ul>
             </div>

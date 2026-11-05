@@ -1,27 +1,27 @@
 @extends('layouts.app')
-@section('title', 'Категорија BE — Автошкола Мартин')
-@section('description', 'Категорија BE во Автошкола Мартин.')
+@section('title', 'Категорија БE — Автошкола Мартин')
+@section('description', 'Категорија БE во Автошкола Мартин.')
 @section('nav', 'categories')
 @section('content')
     <div class="page-hero">
         <div class="container page-hero-content">
             <div class="breadcrumb"><a href="{{ route('home') }}">Почетна</a><i class="fa-solid fa-chevron-right"></i><a
                     href="{{ route('categories') }}">Категории</a><i class="fa-solid fa-chevron-right"></i><span>Категорија
-                    BE</span></div>
-            <h1>Категорија BE — автомобил со приколка</h1>
+                    БE</span></div>
+            <h1>Категорија БE — автомобил со приколка</h1>
             <p>Обука за BE: услови, возило, практика и испит.</p>
         </div>
     </div>
     <section>
         <div class="container cat-page">
             <div class="cat-page-main">
-                <p class="cat-lead">Категорија BE: автомобил со приколка. Обука на Seat Ibiza 2020.</p>
+                <p class="cat-lead">Категорија БE: автомобил со приколка. Обука на Seat Ibiza 2020.</p>
                 <h2>Услови и потребни документи</h2>
                 <div class="cat-req-grid">
                     <div class="cat-req-item"><i class="fa-solid fa-check"></i>лична карта / пасош</div>
                     <div class="cat-req-item"><i class="fa-solid fa-check"></i>лекарско уверение за „БЕ“ категорија</div>
                     <div class="cat-req-item"><i class="fa-solid fa-check"></i>завршено најмалку основно образование</div>
-                    <div class="cat-req-item"><i class="fa-solid fa-check"></i>поседување на категорија B</div>
+                    <div class="cat-req-item"><i class="fa-solid fa-check"></i>поседување на категорија Б</div>
                 </div>
                 <h2>Возило за обука и полагање</h2>
                 <div class="cat-vehicles is-fleet">
