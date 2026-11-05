@@ -15,13 +15,19 @@
 <body>
   <a class="skip-link" href="#main">Прескокни до содржина</a>
   <header class="topbar">
-    <a class="brand" href="{{ route('admin.conversations.index') }}">
-      <img src="{{ asset('images/logo.png') }}" alt="">
-      <span>
-        <strong>Автошкола Мартин</strong>
-        <small>Разговори од чатот</small>
-      </span>
-    </a>
+    <div class="topbar-start">
+      <a class="brand" href="{{ route('admin.conversations.index') }}">
+        <img src="{{ asset('images/logo.png') }}" alt="">
+        <span>
+          <strong>Автошкола Мартин</strong>
+          <small>Админ панел</small>
+        </span>
+      </a>
+      <nav class="admin-nav" aria-label="Секции">
+        <a href="{{ route('admin.conversations.index') }}" @class(['is-on' => request()->routeIs('admin.conversations.*')])>Разговори</a>
+        <a href="{{ route('admin.analytics.index') }}" @class(['is-on' => request()->routeIs('admin.analytics.*')])>Аналитика</a>
+      </nav>
+    </div>
     <nav class="top-actions">
       <a href="{{ route('home') }}" target="_blank" rel="noopener">Сајт</a>
       <form method="POST" action="{{ route('admin.logout') }}">

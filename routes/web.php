@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ConversationController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\BlogController;
@@ -7,11 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-$categories = [
-    'a-kategorija', 'a1-kategorija', 'a2-kategorija', 'am-kategorija',
-    'b-kategorija', 'b-automatik', 'be-kategorija',
-    'c-kategorija', 'ce-kategorija', 'd-kategorija',
-];
+$categories = array_keys(config('analytics.categories', []));
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [LoginController::class, 'create'])->name('admin.login');
@@ -24,6 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin', fn () => redirect()->route('admin.conversations.index'))->name('admin.home');
     Route::post('/admin/logout', [LoginController::class, 'destroy'])->name('admin.logout');
     Route::get('/admin/razgovori', [ConversationController::class, 'index'])->name('admin.conversations.index');
+    Route::get('/admin/analitika', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
     Route::get('/admin/razgovori/{conversation}', [ConversationController::class, 'show'])
         ->whereNumber('conversation')
         ->name('admin.conversations.show');
