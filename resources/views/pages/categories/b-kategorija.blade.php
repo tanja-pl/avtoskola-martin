@@ -41,7 +41,7 @@
                         <button type="button" class="cat-fleet-thumb"
                             data-full="{{ asset('images/vehicles/'.$file) }}"
                             data-caption="{{ $name }}">
-                            <img src="{{ asset('images/vehicles/'.$file) }}" alt="{{ $name }} — Автошкола Мартин" loading="lazy">
+                            <img src="{{ asset('images/vehicles/'.$file) }}" alt="{{ $name }} — Автошкола Мартин">
                             <span>{{ $name }}</span>
                         </button>
                     @endforeach
@@ -72,7 +72,7 @@
                     ] as [$file, $name])
                         <article class="cat-person">
                             <div class="cat-instructor-photo">
-                                <img src="{{ asset('images/instructors/'.$file) }}" alt="{{ $name }}" loading="lazy"
+                                <img src="{{ asset('images/instructors/'.$file) }}" alt="{{ $name }}" 
                                     onerror="this.style.display='none'">
                             </div>
                             <h3>{{ $name }}</h3>

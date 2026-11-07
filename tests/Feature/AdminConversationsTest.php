@@ -128,7 +128,7 @@ class AdminConversationsTest extends TestCase
         $ordered = $store->record($token, 'Прво прашање', 'Прв одговор', [
             'name' => 'Ана Петровска',
             'interest' => 'low',
-        ]);
+        ])->conversation;
         $this->travel(2)->minutes();
         $store->record($token, 'Второ прашање', 'Втор одговор на 11 Октомври.', [
             'name' => 'Ана Петровска',
@@ -148,7 +148,7 @@ class AdminConversationsTest extends TestCase
 
         $old = $store->record(null, 'Старо прашање за работно време', 'Од 9 до 17.', [
             'interest' => 'low',
-        ]);
+        ])->conversation;
         ChatMessage::query()->where('conversation_id', $old->id)->update([
             'created_at' => now()->subDays(12),
         ]);
@@ -156,7 +156,7 @@ class AdminConversationsTest extends TestCase
 
         $script = $store->record(null, '<script>alert(1)</script>', 'Во ред <b>не</b>', [
             'interest' => 'low',
-        ]);
+        ])->conversation;
 
         return [
             'ordered' => $ordered->fresh(),

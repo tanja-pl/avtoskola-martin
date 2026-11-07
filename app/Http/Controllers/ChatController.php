@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ChatConversation;
 use App\Services\ChatConversationStore;
+use App\Services\ChatLeadNotifier;
 use App\Services\OpenAiChatClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ use function App\Support\Chat\isUnknownAnswer;
 use function App\Support\Chat\loadConfig;
 use function App\Support\Chat\logUnanswered;
 use function App\Support\Chat\monthlyBudgetExceeded;
+use function App\Support\Chat\omitPhotoDenial;
 use function App\Support\Chat\persistLead;
 use function App\Support\Chat\recordUsage;
 use function App\Support\Chat\retrieveRelevantKnowledge;
@@ -34,6 +36,7 @@ class ChatController extends Controller
     public function __construct(
         private ChatConversationStore $conversations,
         private OpenAiChatClient $openAi,
+        private ChatLeadNotifier $leadNotifier,
     ) {}
 
     public function store(Request $request): JsonResponse
@@ -93,7 +96,8 @@ class ChatController extends Controller
         }
 
         $retrieved = retrieveRelevantKnowledge(resource_path('knowledge'), $retrievalQuery, $config);
-        $systemPrompt = buildSystemPrompt($retrieved, $lead);
+        $images = vehicleImagesForMessage($message, $cleanHistory);
+        $systemPrompt = buildSystemPrompt($retrieved, $lead, $images !== []);
 
         $messages = [['role' => 'system', 'content' => $systemPrompt]];
         foreach ($cleanHistory as $h) {
@@ -136,6 +140,7 @@ class ChatController extends Controller
             $lead['asked'] = true;
         }
 
+        $reply = omitPhotoDenial($reply, $images);
         $conversation = $this->storeExchange($request, $message, $reply, $lead, $clientIp);
 
         return $this->chatJson([
@@ -146,7 +151,7 @@ class ChatController extends Controller
                 'captured' => ! empty($lead['captured']),
                 'declined' => ! empty($lead['declined']),
             ],
-            'images' => vehicleImagesForMessage($message, $cleanHistory),
+            'images' => $images,
         ], 200, $conversation);
     }
 
@@ -155,11 +160,11 @@ class ChatController extends Controller
      */
     private function storeExchange(Request $request, string $message, string $reply, array $lead, string $clientIp): ?ChatConversation
     {
-        $conversation = null;
+        $recorded = null;
 
         try {
             $token = $request->input('conversation_id');
-            $conversation = $this->conversations->record(
+            $recorded = $this->conversations->record(
                 is_string($token) ? $token : null,
                 $message,
                 $reply,
@@ -170,10 +175,15 @@ class ChatController extends Controller
         }
 
         if (! empty($lead['save'])) {
-            persistLead($lead, $message, $clientIp, $conversation?->id);
+            $savedLead = persistLead($lead, $message, $clientIp, $recorded?->conversation->id);
+
+            if ($savedLead !== null && $recorded?->contactJustCaptured) {
+                $conversationId = $recorded->conversation->id;
+                defer(fn () => $this->leadNotifier->send($conversationId))->always();
+            }
         }
 
-        return $conversation;
+        return $recorded?->conversation;
     }
 
     /**

@@ -27,7 +27,7 @@
                 <div class="cat-vehicles">
                     <article class="cat-vehicle"><img
                             src="https://wmk-ci.xsoftstatic.com/Write/07379/Images/z500-550x700.png"
-                            alt="KAWASAKI Z500, 2025" loading="lazy" onerror="this.style.display='none'">
+                            alt="KAWASAKI Z500, 2025" onerror="this.style.display='none'">
                         <div class="cat-vehicle-body">
                             <h3>KAWASAKI Z500, 2025</h3>
                             <p>Мотор 500 ccm и 33 kW, погоден за практичниот дел и полигонските вежби.</p>
@@ -35,7 +35,7 @@
                     </article>
                     <article class="cat-vehicle"><img
                             src="https://wmk-ci.xsoftstatic.com/Write/07379/Images/zaedno-550x700.png"
-                            alt="CF MOTO 400, 2022" loading="lazy" onerror="this.style.display='none'">
+                            alt="CF MOTO 400, 2022" onerror="this.style.display='none'">
                         <div class="cat-vehicle-body">
                             <h3>CF MOTO 400, 2022</h3>
                             <p>Мотор 400 ccm и 29 kW за совладување на практичниот дел.</p>
@@ -45,17 +45,17 @@
                 <h2>Инструктори</h2>
                 <div class="cat-people">
                     <article class="cat-person"><img src="{{ asset('images/instructors/martin1.png') }}"
-                            alt="Мартин Трајановски" loading="lazy" onerror="this.style.display='none'">
+                            alt="Мартин Трајановски" onerror="this.style.display='none'">
                         <h3>Мартин Трајановски</h3>
                         <p>Инструктор за A, A2, Б, Ц, ЦE и Д</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/stefan.png') }}"
-                            alt="Стефан Трајановски" loading="lazy" onerror="this.style.display='none'">
+                            alt="Стефан Трајановски" onerror="this.style.display='none'">
                         <h3>Стефан Трајановски</h3>
                         <p>Инструктор за A, A2, Б, Ц, ЦE и Д</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/miki.png') }}" alt="Мики Трајановски"
-                            loading="lazy" onerror="this.style.display='none'">
+                            onerror="this.style.display='none'">
                         <h3>Мики Трајановски</h3>
                         <p>Инструктор за A, A1, A2, Б</p>
                     </article>

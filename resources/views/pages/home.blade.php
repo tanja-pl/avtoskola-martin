@@ -43,7 +43,7 @@
       <a href="{{ route('category', 'ce-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-truck-moving" aria-hidden="true"></i></div><div class="cat-label">ЦЕ</div><div class="cat-desc">Камион со приколка</div></a>
     </div>
     <div class="cats-cta">
-      <a href="{{ route('categories') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Погледни сите категории</a>
+      <a href="{{ route('categories') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Погледни ги сите категории</a>
     </div>
   </div>
 </section>
@@ -91,7 +91,7 @@
       <div class="about-visual reveal">
         <div class="about-img-wrap">
           <img src="{{ asset('images/vehicles/b-1.png') }}"
-               loading="lazy" decoding="async"
+               decoding="async"
                onerror="this.style.display='none'" alt="Обука во Автошкола Мартин" style="width:100%;height:100%;object-fit:cover;">
         </div>
         <div class="about-badge">

@@ -286,10 +286,13 @@ function tokenize(string $norm): array
 
 /* ── Prompt ────────────────────────────────────────────────────── */
 
-function buildSystemPrompt(string $knowledge, array $lead = []): string
+function buildSystemPrompt(string $knowledge, array $lead = [], bool $showingPhotos = false): string
 {
     $today = date('Y-m-d');
     $leadBlock = buildLeadPrompt($lead);
+    $photoRule = $showingPhotos
+        ? '- Фотографиите од возилото се прикажуваат автоматски под твојот одговор. Не кажувај дека не можеш да прикажеш слики и не се извинувај за тоа. Не вметнувај линк. Кратко кажи дека фотографиите се подолу.'
+        : '- Не вметнувај линкови и не ветувај дека прикажуваш фотографија.';
 
     return <<<PROMPT
 Ти си официјалниот асистент на Автошкола Мартин (Скопје). Денес: {$today}
@@ -303,7 +306,8 @@ function buildSystemPrompt(string $knowledge, array $lead = []): string
 - Ако категоријата не е јасна, прашај за која категорија станува збор пред да дадеш податоци. Не набројувај факти за сите категории, освен ако посетителот побара список.
 - За возраст одговори само ако границата за таа категорија е напишана во знаењето. Ако ја нема, не погодувај дали лицето исполнува услов.
 - Ако фактот го нема во знаењето: кажи дека ја немаш точната информација и побарај име и контакт телефон, за тимот наскоро да стапи во контакт. Ова важи и кога подолу пишува да не бараш контакт. Не завршувај со „за повеќе детали контактирајте нè“ или со телефон/е-пошта, освен ако посетителот прашал како да ве контактира.
-- Не вметнувај слики, линкови или опис на конкретно возило што го нема во знаењето. Не ветувај дека прикажуваш фотографија.
+- Не вметнувај опис на конкретно возило што го нема во знаењето.
+{$photoRule}
 - Кратки одговори (2–6 реченици). Без долги есеи.
 - Follow-up прашања толкувај ги според историјата, но само со факти од знаењето за истата категорија.
 - Одговорите да бидат како да пишува човек, со нормална граматика, не многу формални.
@@ -525,7 +529,8 @@ function mentionedLicenseCategories(string $norm): array
 /**
  * Photos live in public/images/vehicles. A file is shown only when the visitor
  * asks to see a vehicle, and only for the category they named:
- * a1.png, a2.png, a3.png (A), b-1.png for Б, b-automatic.png for Б автоматик,
+ * a.png, a-category.png and a-category1.png for A, a1.png, a2.png and a2-category.png,
+ * b-1.png for Б, b-automatic.png for Б автоматик,
  * be.png, c.jpg, ce.jpg, d.jpg. AM has no photo.
  *
  * @param  list<array{role?: string, content?: string}>  $history
@@ -543,7 +548,10 @@ function vehicleImagesForMessage(string $message, array $history = []): array
     }
 
     $cats = categoriesForVehiclePhoto($message, $history);
+    info($cats);
     if ($cats === []) {
+        info('return []');
+
         return [];
     }
 
@@ -561,6 +569,8 @@ function vehicleImagesForMessage(string $message, array $history = []): array
     ];
 
     $filesByCategory = [];
+    info($directory);
+    info(scandir($directory));
     foreach (scandir($directory) ?: [] as $file) {
         if (! is_string($file) || ! preg_match('/\.(png|jpe?g|webp)$/i', $file)) {
             continue;
@@ -580,6 +590,8 @@ function vehicleImagesForMessage(string $message, array $history = []): array
         $files = $filesByCategory[$cat] ?? [];
         usort($files, 'strnatcasecmp');
         foreach ($files as $file) {
+
+            info($file);
             $images[] = [
                 'url' => asset('images/vehicles/'.rawurlencode($file)),
                 'alt' => $labels[$cat] ?? 'Возило за обука',
@@ -590,6 +602,39 @@ function vehicleImagesForMessage(string $message, array $history = []): array
     return $images;
 }
 
+/**
+ * The site attaches the photos under the reply. Drop any sentence that claims
+ * the assistant cannot show them.
+ *
+ * @param  list<array{url: string, alt: string}>  $images
+ */
+function omitPhotoDenial(string $reply, array $images): string
+{
+    if ($images === []) {
+        return $reply;
+    }
+
+    $kept = [];
+    foreach (preg_split('/(?<=[\.\!\?])\s+|\n+/u', $reply) ?: [] as $part) {
+        $part = trim($part);
+        if ($part === '' || replyDeniesPhotos($part)) {
+            continue;
+        }
+        $kept[] = $part;
+    }
+
+    $reply = trim(implode(' ', $kept));
+
+    return $reply === '' ? 'Еве ги фотографиите.' : $reply;
+}
+
+function replyDeniesPhotos(string $text): bool
+{
+    $n = mb_strtolower($text, 'UTF-8');
+
+    return (bool) preg_match('/(немам можност да (?:ви )?(?:ги )?(?:прикажам|покажам)|не\s*можам да (?:ви )?(?:ги )?(?:прикажам|покажам)|не прикажувам|не покажувам|can(?:not|\'t) (?:show|display)|unable to (?:show|display))/u', $n);
+}
+
 function userAskedForVehiclePhoto(string $message): bool
 {
     $n = normalizeText($message);
@@ -597,7 +642,7 @@ function userAskedForVehiclePhoto(string $message): bool
         return false;
     }
 
-    foreach (['slika', 'fotograf', 'photo', 'picture', 'foto'] as $needle) {
+    foreach (['slika', 'sliki', 'image', 'fotograf', 'photo', 'picture', 'foto'] as $needle) {
         if (str_contains($n, $needle)) {
             return true;
         }
@@ -612,7 +657,7 @@ function userAskedForVehiclePhoto(string $message): bool
         return true;
     }
 
-    foreach (['koja kola', 'koe vozilo', 'so koe vozilo', 'so koja kola', 'kakvo vozilo', 'kakva kola', 'koj motor', 'koj kamion', 'koj avtobus'] as $needle) {
+    foreach (['koja kola', 'koe vozilo', 'so koe vozilo', 'so koja kola', 'kakvo vozilo', 'kakva kola', 'koj motor', 'koj kamion', 'koj avtobus', 'daj mi slika', 'pokazi mi slika', 'pokazi mi vozilo'] as $needle) {
         if (str_contains($n, $needle)) {
             return true;
         }
@@ -651,7 +696,7 @@ function categoriesForVehiclePhoto(string $message, array $history): array
 function licenseCategoriesInText(string $norm): array
 {
     $cats = mentionedLicenseCategories($norm);
-    if (preg_match_all('/\b(am|a1|a2|be|ce|b|c|d)\b/u', $norm, $matches)) {
+    if (preg_match_all('/\b(a|am|a1|a2|be|ce|b|c|d)\b/u', $norm, $matches)) {
         foreach ($matches[1] as $token) {
             if (! in_array($token, $cats, true)) {
                 $cats[] = $token;
@@ -691,13 +736,13 @@ function categoryForVehicleFile(string $base): ?string
     if (str_starts_with($base, 'ce')) {
         return 'ce';
     }
-    if (preg_match('/^a1\./', $base) === 1) {
+    if (preg_match('/^a1(?:[.\-]|$)/', $base) === 1) {
         return 'a1';
     }
-    if (preg_match('/^a2\./', $base) === 1) {
+    if (preg_match('/^a2(?:[.\-]|$)/', $base) === 1) {
         return 'a2';
     }
-    if (preg_match('/^a3\./', $base) === 1) {
+    if (preg_match('/^a(?:[.\-]|$)/', $base) === 1) {
         return 'a';
     }
     if (str_starts_with($base, 'b')) {
@@ -1224,14 +1269,14 @@ function friendlyError(): string
     return 'Извинете, моментално имам проблем со одговарањето. Обидете се повторно за момент.';
 }
 
-function persistLead(array $lead, string $question, string $ip, ?int $conversationId = null): void
+function persistLead(array $lead, string $question, string $ip, ?int $conversationId = null): ?Lead
 {
     persistLeadToLog($lead, $question, $ip);
 
     $name = $lead['name'] ?? '';
     $phone = $lead['phone'] ?? '';
     if ($name === '' || $phone === '') {
-        return;
+        return null;
     }
 
     $attributes = [
@@ -1243,7 +1288,7 @@ function persistLead(array $lead, string $question, string $ip, ?int $conversati
         $attributes['conversation_id'] = $conversationId;
     }
 
-    Lead::query()->updateOrCreate(
+    return Lead::query()->updateOrCreate(
         ['phone' => $phone, 'name' => $name],
         $attributes,
     );

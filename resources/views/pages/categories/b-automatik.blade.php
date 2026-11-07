@@ -29,7 +29,7 @@
                 <h2>Возило за обука и полагање</h2>
                 <div class="cat-vehicles is-fleet">
                     <article class="cat-vehicle is-large"><img src="{{ asset('images/vehicles/b-automatic.png') }}"
-                            alt="Fiat 500 со автоматски менувач" loading="lazy">
+                            alt="Fiat 500 со автоматски менувач">
                         <div class="cat-vehicle-body">
                             <h3>Fiat 500 — автоматски менувач</h3>
                             <p>Обука и полагање со автоматски менувач. Серво волан, клима и ABS.</p>
@@ -39,7 +39,7 @@
                 <h2>Инструктор</h2>
                 <div class="cat-people is-visible">
                     <article class="cat-person"><img src="{{ asset('images/instructors/zoki.png') }}" alt="Зоран Крстевски"
-                            loading="lazy">
+                            >
                         <h3>Зоран Крстевски</h3>
                         <p>Инструктор за автоматски менувач</p>
                     </article>

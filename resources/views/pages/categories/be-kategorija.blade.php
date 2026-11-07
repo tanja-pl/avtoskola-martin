@@ -26,7 +26,7 @@
                 <h2>Возило за обука и полагање</h2>
                 <div class="cat-vehicles is-fleet">
                     <article class="cat-vehicle is-large"><img src="{{ asset('images/vehicles/be.png') }}"
-                            alt="SEAT Ibiza со приколка" loading="lazy">
+                            alt="SEAT Ibiza со приколка">
                         <div class="cat-vehicle-body">
                             <h3>SEAT Ibiza, 2020</h3>
                             <p>Патничко возило со приколка, серво волан, клима и ABS, за обука и полагање на BE.</p>
@@ -36,12 +36,12 @@
                 <h2>Инструктори</h2>
                 <div class="cat-people is-visible">
                     <article class="cat-person"><img src="{{ asset('images/instructors/martin1.png') }}"
-                            alt="Мартин Трајановски" loading="lazy">
+                            alt="Мартин Трајановски">
                         <h3>Мартин Трајановски</h3>
                         <p>Инструктор за БE</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/stefan.png') }}"
-                            alt="Стефан Трајановски" loading="lazy">
+                            alt="Стефан Трајановски">
                         <h3>Стефан Трајановски</h3>
                         <p>Инструктор за БE</p>
                     </article>
