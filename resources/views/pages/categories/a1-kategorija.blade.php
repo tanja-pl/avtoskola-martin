@@ -28,7 +28,7 @@
                 <div class="cat-vehicles">
                     <article class="cat-vehicle"><img
                             src="https://wmk-ci.xsoftstatic.com/Write/07379/Images/750x450-(1).png" alt="HAMACHI 125, 2025"
-                            loading="lazy" onerror="this.style.display='none'">
+                             onerror="this.style.display='none'">
                         <div class="cat-vehicle-body">
                             <h3>HAMACHI 125, 2025</h3>
                             <p>Мотор 125 ccm, погоден за полигонските вежби и за кандидати кои првпат седнуваат на мотоцикл.
@@ -39,17 +39,17 @@
                 <h2>Инструктори</h2>
                 <div class="cat-people">
                     <article class="cat-person"><img src="{{ asset('images/instructors/martin1.png') }}"
-                            alt="Мартин Трајановски" loading="lazy" onerror="this.style.display='none'">
+                            alt="Мартин Трајановски" onerror="this.style.display='none'">
                         <h3>Мартин Трајановски</h3>
                         <p>Инструктор за A, A1, A2, Б, Ц, ЦE и Д</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/stefan.png') }}"
-                            alt="Стефан Трајановски" loading="lazy" onerror="this.style.display='none'">
+                            alt="Стефан Трајановски" onerror="this.style.display='none'">
                         <h3>Стефан Трајановски</h3>
                         <p>Инструктор за A, A1, A2, Б, Ц, ЦE и Д</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/miki.png') }}" alt="Мики Трајановски"
-                            loading="lazy" onerror="this.style.display='none'">
+                         onerror="this.style.display='none'">
                         <h3>Мики Трајановски</h3>
                         <p>Инструктор за A, A1, A2, Б</p>
                     </article>

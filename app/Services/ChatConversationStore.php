@@ -58,7 +58,7 @@ class ChatConversationStore
     /**
      * @param  array<string, mixed>  $lead
      */
-    public function record(?string $token, string $visitorMessage, string $assistantResponse, array $lead): ChatConversation
+    public function record(?string $token, string $visitorMessage, string $assistantResponse, array $lead): RecordedChatExchange
     {
         try {
             return $this->write($token, $visitorMessage, $assistantResponse, $lead);
@@ -70,7 +70,7 @@ class ChatConversationStore
     /**
      * @param  array<string, mixed>  $lead
      */
-    private function write(?string $token, string $visitorMessage, string $assistantResponse, array $lead): ChatConversation
+    private function write(?string $token, string $visitorMessage, string $assistantResponse, array $lead): RecordedChatExchange
     {
         return DB::transaction(function () use ($token, $visitorMessage, $assistantResponse, $lead) {
             $normalized = $this->normalizeToken($token);
@@ -90,7 +90,7 @@ class ChatConversationStore
                 ]);
             }
 
-            $this->applyLead($conversation, $lead);
+            $contactJustCaptured = $this->applyLead($conversation, $lead);
             $now = now();
             $conversation->last_message_at = $now;
             $conversation->save();
@@ -103,15 +103,16 @@ class ChatConversationStore
                 'created_at' => $now,
             ]);
 
-            return $conversation->refresh();
+            return new RecordedChatExchange($conversation->refresh(), $contactJustCaptured);
         });
     }
 
     /**
      * @param  array<string, mixed>  $lead
      */
-    private function applyLead(ChatConversation $conversation, array $lead): void
+    private function applyLead(ChatConversation $conversation, array $lead): bool
     {
+        $alreadyProvided = (bool) $conversation->contact_provided;
         $name = $this->cleanName($lead['name'] ?? '');
         $phone = $this->cleanPhone($lead['phone'] ?? '');
 
@@ -131,6 +132,8 @@ class ChatConversationStore
         if ($conversation->interest_level === 'high') {
             $conversation->enrollment_interest = true;
         }
+
+        return ! $alreadyProvided && $conversation->contact_provided;
     }
 
     private function normalizeToken(mixed $token): ?string

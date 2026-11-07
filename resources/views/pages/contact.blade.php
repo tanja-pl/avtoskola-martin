@@ -62,7 +62,7 @@
 
         <!-- Map -->
         <div class="map-wrap" style="margin-top:40px;">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3073.486990823653!2d21.432204276211024!3d41.9922401712296!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13541563f8f98b67%3A0x6a0f1ba9796e19ae!2sAvtoskola%20Martin!5e1!3m2!1sen!2smk!4v1793610409080!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3073.486990823653!2d21.432204276211024!3d41.9922401712296!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13541563f8f98b67%3A0x6a0f1ba9796e19ae!2sAvtoskola%20Martin!5e1!3m2!1sen!2smk!4v1793610409080!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
         </div>
       </div>
