@@ -78,6 +78,7 @@ function coreFacts(): string
 - Мото: „Учете за живот, не за испит.“
 - За непознати факти или детали што ги нема тука: НЕ измислувај, НЕ претпоставувај и НЕ упатувај на телефон или е-пошта. Кажи дека ја немаш информацијата и побарај име и контакт телефон, за тимот наскоро да стапи во контакт. Телефонот и е-поштата дај ги само ако посетителот изрично праша како да ве контактира.
 - Ако прашањето е за една категорија, користи само факти за таа категорија. Не пренесувај цена, години, документи или возила од друга категорија.
+- Возило без буква ја одредува категоријата: кола / kola / car = Б, мотор / motor = А (и А1, А2), камион = Ц, автобус = Д. Одговарај за таа категорија.
 CORE;
 }
 
@@ -125,6 +126,7 @@ function loadKnowledgeChunks(string $dir): array
                 'source' => $source,
                 'text' => $part,
                 'norm' => normalizeText($part),
+                'heading' => normalizeText(preg_split('/\R/u', $part, 2)[0] ?? $part),
             ];
         }
     }
@@ -144,10 +146,14 @@ function retrieveRelevantKnowledge(string $dir, string $query, array $config): s
     $chunks = loadKnowledgeChunks($dir);
     $qNorm = normalizeText($query);
     $tokens = tokenize($qNorm);
+    $categories = answerCategories($qNorm);
+    $aboutLength = asksAboutTrainingLength($qNorm);
+    $aboutPrice = asksAboutPrice($qNorm);
 
     $scored = [];
     foreach ($chunks as $i => $chunk) {
         $score = scoreChunk($chunk['norm'], $tokens, $qNorm);
+        $score += categoryAffinity($chunk, $categories);
         if ($score > 0) {
             $scored[] = ['i' => $i, 'score' => $score, 'chunk' => $chunk];
         }
@@ -156,13 +162,27 @@ function retrieveRelevantKnowledge(string $dir, string $query, array $config): s
     usort($scored, static fn ($a, $b) => $b['score'] <=> $a['score']);
 
     $selected = [];
-    if ($scored === []) {
-        // No matching notes. Do not pad the prompt with unrelated facts.
-        $selected = [];
-    } else {
-        foreach (array_slice($scored, 0, $maxChunks) as $row) {
-            $selected[] = $row['chunk'];
+    $selectedIds = [];
+    if ($categories !== []) {
+        foreach ($chunks as $i => $chunk) {
+            $pin = ($aboutLength && isTrainingLengthChunk($chunk, $categories))
+                || ($aboutPrice && isPriceChunk($chunk));
+            if (! $pin) {
+                continue;
+            }
+            $selected[] = $chunk;
+            $selectedIds[$i] = true;
         }
+    }
+    foreach ($scored as $row) {
+        if (count($selected) >= $maxChunks) {
+            break;
+        }
+        if (isset($selectedIds[$row['i']])) {
+            continue;
+        }
+        $selected[] = $row['chunk'];
+        $selectedIds[$row['i']] = true;
     }
 
     $parts = [];
@@ -284,6 +304,663 @@ function tokenize(string $norm): array
     return array_values(array_unique($out));
 }
 
+/**
+ * A named category wins. Otherwise the vehicle is the category:
+ * car = B, motorcycle = A, truck = C, bus = D.
+ *
+ * @return list<string>
+ */
+function answerCategories(string $norm): array
+{
+    $named = mentionedLicenseCategories($norm);
+    if ($named !== []) {
+        return $named;
+    }
+
+    return categoriesImpliedByVehicle($norm);
+}
+
+/**
+ * @return list<string>
+ */
+function categoriesImpliedByVehicle(string $norm): array
+{
+    $cats = [];
+    if (preg_match('/\bmotor|\bmotocikl/u', $norm) === 1) {
+        $cats[] = 'a';
+    }
+    if (preg_match('/\bkol(?:ata|ite|a|i)\b|\bcars?\b|\bavtomobil|\bautomobil/u', $norm) === 1) {
+        $cats[] = 'b';
+    }
+    if (str_contains($norm, 'kamion')) {
+        $cats[] = str_contains($norm, 'prikol') ? 'ce' : 'c';
+    }
+    if (str_contains($norm, 'avtobus')) {
+        $cats[] = 'd';
+    }
+
+    return $cats;
+}
+
+function asksAboutPrice(string $norm): bool
+{
+    foreach (['cini', 'cena', 'cenov', 'kost', 'plaka', 'denari', 'price', 'cost', 'rati'] as $needle) {
+        if (str_contains($norm, $needle)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function asksAboutTrainingLength(string $norm): bool
+{
+    if (preg_match('/\b(denovi|dena|days?)\b/u', $norm) === 1) {
+        return true;
+    }
+    if (preg_match('/\b(casovi|casot|chasovi|hours?)\b/u', $norm) === 1) {
+        return true;
+    }
+    if (str_contains($norm, 'nastavn') || str_contains($norm, 'kolku trae') || str_contains($norm, 'vremetra')) {
+        return true;
+    }
+
+    return preg_match('/\b(vozam|vozish|vozi|vozenje|drive|driving)\b/u', $norm) === 1
+        && (str_contains($norm, 'kolku') || str_contains($norm, 'how many') || str_contains($norm, 'how long'));
+}
+
+/**
+ * @param  array{heading?: string, norm: string}  $chunk
+ * @param  list<string>  $categories
+ */
+function categoryAffinity(array $chunk, array $categories): float
+{
+    if ($categories === []) {
+        return 0.0;
+    }
+
+    $heading = (string) ($chunk['heading'] ?? '');
+    $aboutAsked = false;
+    $aboutOther = false;
+    foreach (['am', 'a1', 'a2', 'be', 'ce', 'bauto', 'a', 'b', 'c', 'd'] as $category) {
+        if (! headingMentionsCategory($heading, $category)) {
+            continue;
+        }
+        if (in_array($category, $categories, true)) {
+            $aboutAsked = true;
+        } else {
+            $aboutOther = true;
+        }
+    }
+    if ($aboutAsked) {
+        return 16.0;
+    }
+    if ($aboutOther) {
+        return -8.0;
+    }
+
+    foreach ($categories as $category) {
+        if (headingMentionsCategory($chunk['norm'], $category)) {
+            return 6.0;
+        }
+    }
+
+    return 0.0;
+}
+
+function headingMentionsCategory(string $headingNorm, string $category): bool
+{
+    return match ($category) {
+        'am' => preg_match('/\bam\b/u', $headingNorm) === 1,
+        'a1' => str_contains($headingNorm, 'a1'),
+        'a2' => str_contains($headingNorm, 'a2'),
+        'be' => preg_match('/\bbe\b/u', $headingNorm) === 1,
+        'ce' => preg_match('/\bce\b/u', $headingNorm) === 1,
+        'bauto' => str_contains($headingNorm, 'avtomat'),
+        'a' => preg_match('/\ba\b/u', $headingNorm) === 1,
+        'b' => preg_match('/\bb\b/u', $headingNorm) === 1,
+        'c' => preg_match('/\bc\b/u', $headingNorm) === 1,
+        'd' => preg_match('/\bd\b/u', $headingNorm) === 1,
+        default => false,
+    };
+}
+
+/**
+ * @param  array{heading?: string}  $chunk
+ * @param  list<string>  $categories
+ */
+/**
+ * @param  array{heading?: string}  $chunk
+ */
+function isPriceChunk(array $chunk): bool
+{
+    $heading = (string) ($chunk['heading'] ?? '');
+
+    return str_starts_with($heading, 'ceni i plakjanje');
+}
+
+/**
+ * A price question is answered directly: first choose category or exam center,
+ * then either the training price for that category or no figure for the exam center.
+ *
+ * @param  list<array{role?: string, content?: string}>  $history
+ */
+function directPriceReply(string $message, array $history): ?string
+{
+    $norm = normalizeText($message);
+    if ($norm === '' || str_contains($norm, 'uplat') || str_contains($norm, 'smetk') || str_contains($norm, 'vkluc')) {
+        return null;
+    }
+    if (asksAboutTrainingLength($norm)) {
+        return null;
+    }
+
+    $step = priceConversationStep(lastAssistantContent($history));
+    $aboutPrice = asksAboutPriceAmount($norm);
+    if (! $aboutPrice && ! ($step !== '' && isPriceFollowUp($norm))) {
+        return null;
+    }
+
+    if (wantsExamCenterPrice($norm, $step)) {
+        return 'Не ја знам цената за испитниот центар. Зависи од категоријата што треба да се положи.';
+    }
+
+    $categories = priceCategoriesFor($norm);
+    if ($categories !== []) {
+        return formatCategoryPrices($categories);
+    }
+
+    if ($step === 'choose' && wantsSchoolCategory($norm)) {
+        return 'За која категорија ви треба цената?';
+    }
+    if ($step === 'which') {
+        return 'За која категорија ви треба цената?';
+    }
+    if ($aboutPrice || $step === 'choose') {
+        return 'Дали прашувате за цена на некоја категорија, или ви треба цена за испитниот центар?';
+    }
+
+    return null;
+}
+
+function priceReplyGivesTrainingPrice(string $reply): bool
+{
+    return str_contains(mb_strtolower($reply, 'UTF-8'), 'денари');
+}
+
+function asksAboutPriceAmount(string $norm): bool
+{
+    if (preg_match('/\b(ceni|cenite|cenata|cena)\b/u', $norm) === 1) {
+        return true;
+    }
+    if (str_contains($norm, 'kolku pari') || str_contains($norm, 'znaes cen') || preg_match('/\bpari\b/u', $norm) === 1) {
+        return true;
+    }
+    if (str_contains($norm, 'kolku cini') || str_contains($norm, 'how much') || preg_match('/\b(price|prices|cost)\b/u', $norm) === 1) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * @param  list<array{role?: string, content?: string}>  $history
+ */
+function lastAssistantContent(array $history): string
+{
+    for ($i = count($history) - 1; $i >= 0; $i--) {
+        if (($history[$i]['role'] ?? '') === 'assistant') {
+            return (string) ($history[$i]['content'] ?? '');
+        }
+    }
+
+    return '';
+}
+
+function priceConversationStep(string $lastAssistant): string
+{
+    $norm = normalizeText($lastAssistant);
+    if ($norm === '') {
+        return '';
+    }
+    if (str_contains($norm, 'ne ja znam cenata za ispitniot centar')) {
+        return 'exam';
+    }
+    if (str_contains($norm, 'za koja kategorija vi treba cenata')) {
+        return 'which';
+    }
+    if (str_contains($norm, 'cena na nekoja kategorija') && str_contains($norm, 'ispitniot centar')) {
+        return 'choose';
+    }
+
+    return '';
+}
+
+function isPriceFollowUp(string $norm): bool
+{
+    if (asksAboutPriceAmount($norm) || mentionsExamCenter($norm) || priceCategoriesFor($norm) !== []) {
+        return true;
+    }
+    foreach (['kategor', 'obuka', 'centar', 'ispit', 'polagan', 'avtoskol', 'avtoshkol'] as $needle) {
+        if (str_contains($norm, $needle)) {
+            return true;
+        }
+    }
+
+    return preg_match('/^(a|am|a1|a2|b|c|d|be|ce)$/u', $norm) === 1;
+}
+
+function mentionsExamCenter(string $norm): bool
+{
+    if (str_contains($norm, 'examination')) {
+        return true;
+    }
+    if (str_contains($norm, 'ispitn')) {
+        return true;
+    }
+
+    return str_contains($norm, 'centar') && str_contains($norm, 'polagan');
+}
+
+function wantsExamCenterPrice(string $norm, string $step): bool
+{
+    if (mentionsExamCenter($norm)) {
+        return true;
+    }
+    if (asksAboutPriceAmount($norm) && (str_contains($norm, 'ispit') || str_contains($norm, 'polagan'))) {
+        return true;
+    }
+
+    $namedCategory = priceCategoriesFor($norm) !== [];
+    $asksForTrainingPrice = $namedCategory && (
+        asksAboutPriceAmount($norm)
+        || str_contains($norm, 'obuka')
+        || str_contains($norm, 'avtoskol')
+        || str_contains($norm, 'avtoshkol')
+    );
+    if ($asksForTrainingPrice) {
+        return false;
+    }
+    if ($step === 'choose' && ! $namedCategory && preg_match('/\b(centar|ispit|ispitot|polaganje|polaganjeto)\b/u', $norm) === 1) {
+        return true;
+    }
+
+    return $step === 'exam';
+}
+
+function wantsSchoolCategory(string $norm): bool
+{
+    foreach (['kategor', 'obuka', 'avtoskol', 'avtoshkol', 'skolata'] as $needle) {
+        if (str_contains($norm, $needle)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @return list<string>
+ */
+function priceCategoriesFor(string $norm): array
+{
+    if (str_contains($norm, 'a1') && str_contains($norm, 'avtomat')) {
+        return ['a1auto'];
+    }
+
+    $named = answerCategories($norm);
+    if ($named !== []) {
+        return $named;
+    }
+    if (preg_match('/(?:^|\b(?:za|kategorija|kategorijata)\s+)(am|a1|a2|be|ce|a|b|c|d)\b/u', $norm, $matches) === 1) {
+        return [$matches[1]];
+    }
+
+    return [];
+}
+
+/**
+ * @param  list<string>  $categories
+ */
+function formatCategoryPrices(array $categories): string
+{
+    $section = trainingPriceSection();
+    $lines = preg_split('/\n/u', $section) ?: [];
+    $parts = [];
+    foreach ($categories as $category) {
+        $price = priceLineForCategory($lines, $category);
+        if ($price === null) {
+            continue;
+        }
+        $text = rtrim($price, '.').'.';
+        $installment = installmentSentence($lines, $category);
+        if ($installment !== null) {
+            $text .= ' '.$installment;
+        }
+        if (! in_array($text, $parts, true)) {
+            $parts[] = $text;
+        }
+    }
+    if ($parts === []) {
+        return 'За која категорија ви треба цената?';
+    }
+
+    return implode("\n", $parts);
+}
+
+function trainingPriceSection(): string
+{
+    $faq = (string) @file_get_contents(resource_path('knowledge/faq.md'));
+    if (! preg_match('/# Цени и плаќање\s*(.*?)(?=\n## |\n# )/su', $faq, $matches)) {
+        return '';
+    }
+
+    return trim($matches[1]);
+}
+
+/**
+ * @param  list<string>  $lines
+ */
+function priceLineForCategory(array $lines, string $category): ?string
+{
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '' || ! str_starts_with($line, 'Обука за')) {
+            continue;
+        }
+        if (priceLineMatches(normalizeText($line), $category)) {
+            return $line;
+        }
+    }
+
+    return null;
+}
+
+function priceLineMatches(string $norm, string $category): bool
+{
+    return match ($category) {
+        'am' => str_contains($norm, 'obuka za am'),
+        'a1auto' => str_contains($norm, 'a1') && str_contains($norm, 'avtomat'),
+        'a', 'a1', 'a2' => str_contains($norm, 'a a1 a2'),
+        'bauto' => str_contains($norm, 'b avtomat'),
+        'be' => preg_match('/\bobuka za be\b/u', $norm) === 1,
+        'ce' => preg_match('/\bobuka za ce\b/u', $norm) === 1,
+        'b' => preg_match('/\bobuka za b\b/u', $norm) === 1 && ! str_contains($norm, 'avtomat'),
+        'c' => preg_match('/\bobuka za c\b/u', $norm) === 1,
+        'd' => preg_match('/\bobuka za d\b/u', $norm) === 1,
+        default => false,
+    };
+}
+
+/**
+ * @param  list<string>  $lines
+ */
+function installmentSentence(array $lines, string $category): ?string
+{
+    $chosen = null;
+    foreach ($lines as $line) {
+        $line = trim($line);
+        $norm = normalizeText($line);
+        if ($line === '' || ! str_contains($norm, 'rati') || ! installmentMatches($norm, $category)) {
+            continue;
+        }
+        $noInstallments = str_contains($norm, 'nema');
+        $prefersNone = in_array($category, ['am', 'a1auto'], true);
+        if ($prefersNone === $noInstallments) {
+            $chosen = $norm;
+            break;
+        }
+        $chosen ??= $norm;
+    }
+    if ($chosen === null) {
+        return null;
+    }
+    if (str_contains($chosen, 'nema')) {
+        return 'Нема можност за рати.';
+    }
+    if (str_contains($chosen, 'tri mesec')) {
+        return 'Може да се плати на три месечни рати.';
+    }
+    if (str_contains($chosen, 'dve mesec')) {
+        return 'Може да се плати до две месечни рати.';
+    }
+
+    return null;
+}
+
+function installmentMatches(string $norm, string $category): bool
+{
+    return match ($category) {
+        'am', 'a1auto' => str_contains($norm, 'nema'),
+        'a', 'a1', 'a2' => preg_match('/\ba\b/u', $norm) === 1 && ! str_contains($norm, 'nema'),
+        'bauto' => false,
+        'be' => preg_match('/\bbe\b/u', $norm) === 1,
+        'ce' => preg_match('/\bce\b/u', $norm) === 1,
+        'b' => preg_match('/\bb\b/u', $norm) === 1,
+        'c' => preg_match('/\bc\b/u', $norm) === 1,
+        'd' => preg_match('/\bd\b/u', $norm) === 1,
+        default => false,
+    };
+}
+
+/**
+ * Parental consent forms exist only for B, AM and A1.
+ * Files stay byte-for-byte in public/documents/consent:
+ * soglasnost-b.doc, soglasnost-am.doc, soglasnost-a1.doc.
+ *
+ * @param  list<array{role?: string, content?: string}>  $history
+ * @return array{reply: string, downloads: list<array{url: string, filename: string, label: string}>}|null
+ */
+function directConsentReply(string $message, array $history): ?array
+{
+    $norm = normalizeText($message);
+    if ($norm === '') {
+        return null;
+    }
+
+    $step = consentConversationStep(lastAssistantContent($history));
+    $asks = asksForParentalConsent($norm);
+    if (! $asks && $step !== 'choose') {
+        return null;
+    }
+
+    $category = consentCategoryFromText($norm);
+    if ($category === null && $asks) {
+        $category = consentCategoryFromHistory($history);
+    }
+    if ($category === null) {
+        if ($step === 'choose' && ! $asks) {
+            return null;
+        }
+
+        return [
+            'reply' => 'Согласност од родители имаме за категории Б, АМ и А1. За која од нив ви треба документот?',
+            'downloads' => [],
+        ];
+    }
+
+    if (! in_array($category, ['b', 'am', 'a1'], true)) {
+        $label = consentCategoryLabel($category);
+
+        return [
+            'reply' => "За категорија {$label} немаме документ за согласност од родители. Согласност имаме само за Б, АМ и А1. Ако сакате, оставете име и контакт телефон и тимот ќе ви помогне.",
+            'downloads' => [],
+        ];
+    }
+
+    $label = consentCategoryLabel($category);
+    $file = consentDocumentFile($category);
+    if ($file === null) {
+        return [
+            'reply' => "Согласноста за категорија {$label} ја испраќа тимот како документ. Оставете име и контакт телефон и ќе ви ја пратат.",
+            'downloads' => [],
+        ];
+    }
+
+    return [
+        'reply' => "Еве ја согласноста од родители за категорија {$label}.",
+        'downloads' => [[
+            'url' => asset('documents/consent/'.rawurlencode($file)),
+            'filename' => $file,
+            'label' => "Преземи согласност за {$label}",
+        ]],
+    ];
+}
+
+function asksForParentalConsent(string $norm): bool
+{
+    if (str_contains($norm, 'parental') || str_contains($norm, 'underage') || str_contains($norm, 'malolet') || str_contains($norm, 'nepolnolet')) {
+        return true;
+    }
+    if (str_contains($norm, 'soglas') && ! str_contains($norm, 'instruktor')) {
+        return true;
+    }
+    if (str_contains($norm, 'roditel') && (str_contains($norm, 'izjav') || str_contains($norm, 'potpis') || str_contains($norm, 'notar'))) {
+        return true;
+    }
+    if (preg_match('/\b(nemam|nema|pod|under)\s+18\b/u', $norm) === 1) {
+        return true;
+    }
+    if (preg_match('/\bimam\s+1[67]\b/u', $norm) === 1) {
+        return true;
+    }
+
+    return preg_match('/\b1[67]\s+godin/u', $norm) === 1 && ! str_contains($norm, 'kolku godin');
+}
+
+function consentConversationStep(string $lastAssistant): string
+{
+    $norm = normalizeText($lastAssistant);
+    if ($norm === '') {
+        return '';
+    }
+    if (str_contains($norm, 'soglasnost od roditeli imame') && str_contains($norm, 'a1')) {
+        return 'choose';
+    }
+
+    return '';
+}
+
+function consentCategoryFromText(string $norm): ?string
+{
+    if (preg_match('/\ba1\b/u', $norm) === 1 && ! str_contains($norm, 'a1 avtomat')) {
+        return 'a1';
+    }
+    if (preg_match('/(?<![a-z0-9])am(?![a-z0-9])/u', $norm) === 1) {
+        return 'am';
+    }
+    if (preg_match('/\bkol(?:ata|ite|a|i)\b|\bcars?\b|\bavtomobil|\bautomobil/u', $norm) === 1) {
+        return 'b';
+    }
+    if (preg_match('/\bmotor|\bmotocikl/u', $norm) === 1) {
+        return 'a';
+    }
+    if (str_contains($norm, 'avtobus')) {
+        return 'd';
+    }
+    if (str_contains($norm, 'kamion')) {
+        return str_contains($norm, 'prikol') ? 'ce' : 'c';
+    }
+    if (str_contains($norm, 'avtomat') && preg_match('/(?<![a-z0-9])b(?![a-z0-9])/u', $norm) === 1) {
+        return 'bauto';
+    }
+    if (preg_match('/\b(?:kategorija|kategorijata|kategor)\s*(am|a1|a2|be|ce|a|b|c|d)\b/u', $norm, $matches) === 1) {
+        return $matches[1];
+    }
+    if (preg_match('/^(am|a1|a2|be|ce|a|b|c|d)$/u', $norm, $matches) === 1) {
+        return $matches[1];
+    }
+    if (preg_match('/(?:^|\bza\s+)(am|a1|a2|be|ce|a|b|c|d)\b/u', $norm, $matches) === 1) {
+        return $matches[1];
+    }
+
+    return null;
+}
+
+/**
+ * @param  list<array{role?: string, content?: string}>  $history
+ */
+function consentCategoryFromHistory(array $history): ?string
+{
+    for ($i = count($history) - 1; $i >= 0; $i--) {
+        if (($history[$i]['role'] ?? '') !== 'user') {
+            continue;
+        }
+        $category = consentCategoryFromText(normalizeText((string) ($history[$i]['content'] ?? '')));
+        if ($category !== null) {
+            return $category;
+        }
+    }
+
+    return null;
+}
+
+function consentCategoryLabel(string $category): string
+{
+    return match ($category) {
+        'am' => 'АМ',
+        'a1' => 'А1',
+        'a2' => 'А2',
+        'a' => 'А',
+        'b' => 'Б',
+        'bauto' => 'Б автоматик',
+        'be' => 'БЕ',
+        'c' => 'Ц',
+        'ce' => 'ЦЕ',
+        'd' => 'Д',
+        default => strtoupper($category),
+    };
+}
+
+function consentDocumentFile(string $category): ?string
+{
+    if (! in_array($category, ['b', 'am', 'a1'], true)) {
+        return null;
+    }
+
+    $directory = public_path('documents/consent');
+    foreach (['soglasnost-'.$category.'.doc', 'soglasnost-'.$category.'.docx', $category.'.doc', $category.'.docx'] as $name) {
+        if (is_file($directory.DIRECTORY_SEPARATOR.$name)) {
+            return $name;
+        }
+    }
+
+    $found = array_merge(glob($directory.DIRECTORY_SEPARATOR.'*.doc') ?: [], glob($directory.DIRECTORY_SEPARATOR.'*.docx') ?: []);
+    foreach ($found as $path) {
+        $base = normalizeText(pathinfo($path, PATHINFO_FILENAME));
+        $matches = match ($category) {
+            'a1' => str_contains($base, 'a1'),
+            'am' => preg_match('/\bam\b/u', $base) === 1 && ! str_contains($base, 'a1'),
+            'b' => preg_match('/\bb\b/u', $base) === 1 && preg_match('/\bbe\b/u', $base) !== 1,
+            default => false,
+        };
+        if ($matches) {
+            return basename($path);
+        }
+    }
+
+    return null;
+}
+
+/**
+ * @param  array{heading?: string}  $chunk
+ * @param  list<string>  $categories
+ */
+function isTrainingLengthChunk(array $chunk, array $categories): bool
+{
+    $heading = (string) ($chunk['heading'] ?? '');
+    if (! str_contains($heading, 'kolku trae celata obuka')) {
+        return false;
+    }
+    foreach ($categories as $category) {
+        if (headingMentionsCategory($heading, $category)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /* ── Prompt ────────────────────────────────────────────────────── */
 
 function buildSystemPrompt(string $knowledge, array $lead = [], bool $showingPhotos = false, bool $showingPaymentSlips = false, bool $showingSchoolSlip = false): string
@@ -309,7 +986,12 @@ function buildSystemPrompt(string $knowledge, array $lead = [], bool $showingPho
 - Одговарај САМО со факти што се напишани во ЗНАЕЊЕТО подолу. Тоа е единствениот извор. Не користи општо знаење и не дополнувај од памтење.
 - Не измислувај и не претпоставувај цени, рати, адреси, телефон, термини, старосна граница, број на часови, документи, испити, возила или правила. Ако нешто не е напишано, тие податоци ги немаш.
 - Прво утврди за која категорија прашува посетителот: AM, A1, A2, A, Б, Б автоматик, БE, Ц, ЦE или Д. Одговарај само за таа категорија. Не мешај цена, документи, години или возила од друга категорија.
-- Ако категоријата не е јасна, прашај за која категорија станува збор пред да дадеш податоци. Не набројувај факти за сите категории, освен ако посетителот побара список.
+- Возило без буква ја одредува категоријата, и тогаш не прашувај повторно која е: кола, kola или car = Б; мотор или motor = А, А1 и А2; камион = Ц; автобус = Д. Ако е кажана и буква, буквата важи.
+- Ако категоријата не е јасна ниту од буква ниту од возило, прашај за која категорија станува збор пред да дадеш податоци. Не набројувај факти за сите категории, освен ако посетителот побара список.
+- На прашање колку денови или часови се вози со инструктор, одговори со практичните часови и денови што се напишани за таа категорија. Не кажувај дека ја немаш информацијата ако тие бројки се во знаењето.
+- За цена, цени, „ги знаеш цените“ или „колку пари“: ако не е кажана ниту категорија ниту испитен центар, прво прашај дали сака цена за некоја категорија или цена за испитниот центар. Не давај износи пред да одговори.
+- За цена на испитниот центар кажи дека не ја знаеш, зависи од категоријата што треба да се положи. Не измислувај износ и не ја давај цената на обуката наместо тоа.
+- Ако каже категорија или возило, дај ја само цената на обуката за таа категорија. Не набројувај ги другите категории.
 - За возраст одговори само ако границата за таа категорија е напишана во знаењето. Ако ја нема, не погодувај дали лицето исполнува услов.
 - Ако фактот го нема во знаењето: кажи дека ја немаш точната информација и побарај име и контакт телефон, за тимот наскоро да стапи во контакт. Ова важи и кога подолу пишува да не бараш контакт. Не завршувај со „за повеќе детали контактирајте нè“ или со телефон/е-пошта, освен ако посетителот прашал како да ве контактира.
 - Не вметнувај опис на конкретно возило што го нема во знаењето.
@@ -922,14 +1604,9 @@ function categoriesNamedForPhotos(string $norm): array
 
 function photoCategoryForVehicleKind(string $norm): ?string
 {
-    if (preg_match('/\bmotor/u', $norm) === 1) {
-        return 'a';
-    }
-    if (preg_match('/\bkol(?:ata|ite|a|i)\b|\bavtomobil|\bautomobil/u', $norm) === 1) {
-        return 'b';
-    }
+    $cats = categoriesImpliedByVehicle($norm);
 
-    return null;
+    return $cats[0] ?? null;
 }
 
 /**

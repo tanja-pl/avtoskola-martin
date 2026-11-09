@@ -28,7 +28,10 @@ use function App\Support\Chat\monthlyBudgetExceeded;
 use function App\Support\Chat\omitPaymentSlipDenial;
 use function App\Support\Chat\omitPhotoDenial;
 use function App\Support\Chat\paymentSlipImagesForMessage;
+use function App\Support\Chat\directConsentReply;
+use function App\Support\Chat\directPriceReply;
 use function App\Support\Chat\persistLead;
+use function App\Support\Chat\priceReplyGivesTrainingPrice;
 use function App\Support\Chat\recordUsage;
 use function App\Support\Chat\retrieveRelevantKnowledge;
 use function App\Support\Chat\sanitizeHistory;
@@ -91,6 +94,49 @@ class ChatController extends Controller
         $incomingLead = is_array($data['lead'] ?? null) ? $data['lead'] : [];
         $incomingLead = $this->conversations->priorLead($data['conversation_id'] ?? null, $incomingLead);
         $lead = evaluateLead($message, $cleanHistory, $incomingLead);
+
+        $consent = directConsentReply($message, $cleanHistory);
+        if ($consent !== null) {
+            $reply = $consent['reply'];
+            if (assistantAskedForContact($reply)) {
+                $lead['asked'] = true;
+            }
+            $conversation = $this->storeExchange($request, $message, $reply, $lead, $clientIp);
+
+            return $this->chatJson([
+                'reply' => $reply,
+                'unknown' => false,
+                'lead' => [
+                    'asked' => ! empty($lead['asked']) || ! empty($lead['ask_now']),
+                    'captured' => ! empty($lead['captured']),
+                    'declined' => ! empty($lead['declined']),
+                ],
+                'images' => [],
+                'downloads' => $consent['downloads'],
+            ], 200, $conversation);
+        }
+
+        $priceReply = directPriceReply($message, $cleanHistory);
+        if ($priceReply !== null) {
+            if (priceReplyGivesTrainingPrice($priceReply)) {
+                $priceReply = ensureContactAsk($priceReply, $lead);
+                if (assistantAskedForContact($priceReply)) {
+                    $lead['asked'] = true;
+                }
+            }
+            $conversation = $this->storeExchange($request, $message, $priceReply, $lead, $clientIp);
+
+            return $this->chatJson([
+                'reply' => $priceReply,
+                'unknown' => false,
+                'lead' => [
+                    'asked' => ! empty($lead['asked']) || ! empty($lead['ask_now']),
+                    'captured' => ! empty($lead['captured']),
+                    'declined' => ! empty($lead['declined']),
+                ],
+                'images' => [],
+            ], 200, $conversation);
+        }
 
         $retrievalQuery = $message;
         foreach (array_reverse($cleanHistory) as $h) {
