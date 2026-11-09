@@ -15,7 +15,7 @@
     <section>
         <div class="container cat-page">
             <div class="cat-page-main">
-                <p class="cat-lead">Обука за патнички автомобил со автоматски менувач. Истите услови како категорија Б, со
+                <p class="cat-lead">Обука за автомобил со автоматски менувач. Истите услови како категорија Б, со
                     обука на автоматско возило.</p>
                 <h2>Услови и потребни документи</h2>
                 <div class="cat-req-grid">
@@ -66,7 +66,7 @@
             <aside class="cat-aside">
                 <div class="cat-price">
                     <div class="label">Цена на обука</div>
-                    <div class="amount">38.000 денари</div>
+                    <div class="amount">36.000 денари</div>
                     <p>Со автоматски менувач. Можност за рати. За финансирање: Билјана, 070-363-449.</p>
                     <a href="{{ route('contact') }}" class="btn btn-outline"
                         style="width:100%;justify-content:center;margin-top:10px;">Контакт</a>

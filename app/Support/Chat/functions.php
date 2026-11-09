@@ -286,13 +286,19 @@ function tokenize(string $norm): array
 
 /* ── Prompt ────────────────────────────────────────────────────── */
 
-function buildSystemPrompt(string $knowledge, array $lead = [], bool $showingPhotos = false): string
+function buildSystemPrompt(string $knowledge, array $lead = [], bool $showingPhotos = false, bool $showingPaymentSlips = false, bool $showingSchoolSlip = false): string
 {
     $today = date('Y-m-d');
     $leadBlock = buildLeadPrompt($lead);
     $photoRule = $showingPhotos
         ? '- Фотографиите од возилото се прикажуваат автоматски под твојот одговор. Не кажувај дека не можеш да прикажеш слики и не се извинувај за тоа. Не вметнувај линк. Кратко кажи дека фотографиите се подолу.'
         : '- Не вметнувај линкови и не ветувај дека прикажуваш фотографија.';
+    $paymentRule = $showingPaymentSlips
+        ? '- Под одговорот се прикажуваат трите уплатници. Кажи дека му требаат сите 3: уплата за возачки испит, административна такса и генерирање на електронски тест. Тоа е целосната информација: не кажувај дека ја немаш информацијата за цени, сметки или уплатници и не барај име или телефон. Не прашувај за категорија. Не кажувај дека не можеш да ги прикажеш и не вметнувај линк.'
+        : '';
+    $schoolSlipRule = $showingSchoolSlip
+        ? '- Под одговорот се прикажува уплатницата за автошколата. Кажи дека уплатата за обуката се прави на трансакциската сметка на Мартин ДОО Скопје во Халкбанк: 270-0436012501-12, и дека сликата е подолу. Тоа е целосната информација: не кажувај дека ја немаш информацијата и не барај име или телефон. Не прашувај за категорија. Не кажувај дека не можеш да ја прикажеш и не вметнувај линк.'
+        : '';
 
     return <<<PROMPT
 Ти си официјалниот асистент на Автошкола Мартин (Скопје). Денес: {$today}
@@ -308,6 +314,8 @@ function buildSystemPrompt(string $knowledge, array $lead = [], bool $showingPho
 - Ако фактот го нема во знаењето: кажи дека ја немаш точната информација и побарај име и контакт телефон, за тимот наскоро да стапи во контакт. Ова важи и кога подолу пишува да не бараш контакт. Не завршувај со „за повеќе детали контактирајте нè“ или со телефон/е-пошта, освен ако посетителот прашал како да ве контактира.
 - Не вметнувај опис на конкретно возило што го нема во знаењето.
 {$photoRule}
+{$paymentRule}
+{$schoolSlipRule}
 - Кратки одговори (2–6 реченици). Без долги есеи.
 - Follow-up прашања толкувај ги според историјата, но само со факти од знаењето за истата категорија.
 - Одговорите да бидат како да пишува човек, со нормална граматика, не многу формални.
@@ -603,6 +611,211 @@ function vehicleImagesForMessage(string $message, array $history = []): array
 }
 
 /**
+ * Filled payment slips live in public/images/test. Shown when the visitor asks
+ * for an уплатница, an uplata (including polygon or city driving), or a сметка.
+ *
+ * @return list<array{url: string, alt: string, kind: string}>
+ */
+function paymentSlipImagesForMessage(string $message): array
+{
+    if (! asksForPaymentSlips($message)) {
+        return [];
+    }
+
+    $slips = [
+        'uplatnica1.png' => 'Уплата за возачки испит',
+        'administrativna-taksa11.png' => 'Административна такса',
+        'generiranje-etest.png' => 'Генерирање на електронски тест',
+    ];
+
+    $images = [];
+    foreach ($slips as $file => $alt) {
+        if (! is_file(public_path('images/test/'.$file))) {
+            continue;
+        }
+        $images[] = [
+            'url' => asset('images/test/'.$file),
+            'alt' => $alt,
+            'kind' => 'document',
+        ];
+    }
+
+    return $images;
+}
+
+function asksForPaymentSlips(string $message): bool
+{
+    $normalized = normalizeText($message);
+    if ($normalized === '') {
+        return false;
+    }
+
+    if (! str_contains($normalized, 'uplat') && ! str_contains($normalized, 'smetk')) {
+        return false;
+    }
+
+    if (asksForSchoolPaymentSlip($message) && ! asksForExamPayment($normalized)) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * The school tuition slip (public/images/transactions). Shown when the visitor
+ * asks how to pay the driving school, or asks for the автошкола уплатница.
+ *
+ * @return list<array{url: string, alt: string, kind: string}>
+ */
+function schoolPaymentImageForMessage(string $message): array
+{
+    if (! asksForSchoolPaymentSlip($message)) {
+        return [];
+    }
+
+    $file = 'uplatnica-avtoskola.jpg';
+    if (! is_file(public_path('images/transactions/'.$file))) {
+        return [];
+    }
+
+    return [[
+        'url' => asset('images/transactions/'.$file),
+        'alt' => 'Уплатница за автошкола — Мартин ДОО Скопје',
+        'kind' => 'document',
+    ]];
+}
+
+function asksForSchoolPaymentSlip(string $message): bool
+{
+    $normalized = normalizeText($message);
+    if ($normalized === '') {
+        return false;
+    }
+
+    $schoolSlip = str_contains($normalized, 'uplat') && (
+        str_contains($normalized, 'avtoskol')
+        || str_contains($normalized, 'avtoshkol')
+        || str_contains($normalized, 'avto skol')
+        || str_contains($normalized, 'driving school')
+    );
+    if ($schoolSlip) {
+        return true;
+    }
+
+    return (bool) preg_match(
+        '/(kako .{0,30}(plat|plak)|kade .{0,20}(plat|plak)|nacin na plak|\bplakjanje\b|how .{0,30}pay|can i pay|where .{0,20}pay)/u',
+        $normalized
+    );
+}
+
+function asksForExamPayment(string $normalized): bool
+{
+    foreach (['ispit', 'taksa', 'etest', 'poligon', 'grad'] as $needle) {
+        if (str_contains($normalized, $needle)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param  list<array{url: string, alt: string}>  $slips
+ */
+function ensureSchoolPaymentNotice(string $reply, array $slips): string
+{
+    if ($slips === []) {
+        return $reply;
+    }
+
+    $notice = 'Уплатата за автошколата ја правите на трансакциската сметка на Мартин ДОО Скопје, Халкбанк: 270-0436012501-12. Уплатницата е подолу — кликнете на сликата за да ја видите поголема.';
+    $normalized = mb_strtolower($reply, 'UTF-8');
+    if (str_contains($normalized, '270-0436012501-12') || str_contains($normalized, 'уплатницата е подолу')) {
+        return $reply;
+    }
+
+    $reply = trim($reply);
+
+    return $reply === '' ? $notice : $notice."\n\n".$reply;
+}
+
+/**
+ * @param  list<array{url: string, alt: string}>  $slips
+ */
+function ensurePaymentSlipNotice(string $reply, array $slips): string
+{
+    if ($slips === []) {
+        return $reply;
+    }
+
+    $notice = 'Ви требаат овие 3 уплатници: уплата за возачки испит, административна такса и генерирање на електронски тест. Кликнете на секоја слика за да ја видите поголема.';
+    $normalized = mb_strtolower($reply, 'UTF-8');
+    if (str_contains($normalized, '3 уплатниц') || str_contains($normalized, 'три уплатниц') || str_contains($normalized, 'трите уплатниц')) {
+        return $reply;
+    }
+
+    $reply = trim($reply);
+
+    return $reply === '' ? $notice : $notice."\n\n".$reply;
+}
+
+/**
+ * The slips already answer the question. Drop the apology that claims the
+ * prices or accounts are unknown, and the contact request that follows it.
+ *
+ * @param  list<array{url: string, alt: string}>  $slips
+ */
+function omitPaymentSlipDenial(string $reply, array $slips): string
+{
+    if ($slips === []) {
+        return $reply;
+    }
+
+    $parts = [];
+    foreach (preg_split('/(?<=[\.\!\?])\s+|\n+/u', $reply) ?: [] as $part) {
+        $part = trim($part);
+        if ($part !== '') {
+            $parts[] = $part;
+        }
+    }
+
+    $denies = false;
+    foreach ($parts as $part) {
+        if (replyDeniesPaymentInfo($part)) {
+            $denies = true;
+            break;
+        }
+    }
+    if (! $denies) {
+        return $reply;
+    }
+
+    $kept = [];
+    foreach ($parts as $part) {
+        if (replyDeniesPaymentInfo($part) || replyAsksContactAfterUnknown($part)) {
+            continue;
+        }
+        $kept[] = $part;
+    }
+
+    return trim(implode("\n\n", $kept));
+}
+
+function replyDeniesPaymentInfo(string $text): bool
+{
+    $n = mb_strtolower($text, 'UTF-8');
+
+    return (bool) preg_match('/(немам точната информација|немам точна информација|немам информација|немам податок|do not have|don\'t have)/u', $n);
+}
+
+function replyAsksContactAfterUnknown(string $text): bool
+{
+    $n = mb_strtolower($text, 'UTF-8');
+
+    return (bool) preg_match('/(оставете.{0,80}(име|телефон)|име и контакт телефон|ве молам оставете|leave your name)/u', $n);
+}
+
+/**
  * The site attaches the photos under the reply. Drop any sentence that claims
  * the assistant cannot show them.
  *
@@ -672,7 +885,7 @@ function userAskedForVehiclePhoto(string $message): bool
  */
 function categoriesForVehiclePhoto(string $message, array $history): array
 {
-    $cats = licenseCategoriesInText(normalizeText($message));
+    $cats = categoriesNamedForPhotos(normalizeText($message));
     if ($cats !== []) {
         return $cats;
     }
@@ -681,13 +894,42 @@ function categoriesForVehiclePhoto(string $message, array $history): array
         if (($history[$i]['role'] ?? '') !== 'user') {
             continue;
         }
-        $cats = licenseCategoriesInText(normalizeText((string) ($history[$i]['content'] ?? '')));
+        $cats = categoriesNamedForPhotos(normalizeText((string) ($history[$i]['content'] ?? '')));
         if ($cats !== []) {
             return $cats;
         }
     }
 
     return [];
+}
+
+/**
+ * A named licence category wins. Otherwise "мотори" means category A and "коли" means category B.
+ *
+ * @return list<string>
+ */
+function categoriesNamedForPhotos(string $norm): array
+{
+    $cats = licenseCategoriesInText($norm);
+    if ($cats !== []) {
+        return $cats;
+    }
+
+    $kind = photoCategoryForVehicleKind($norm);
+
+    return $kind === null ? [] : [$kind];
+}
+
+function photoCategoryForVehicleKind(string $norm): ?string
+{
+    if (preg_match('/\bmotor/u', $norm) === 1) {
+        return 'a';
+    }
+    if (preg_match('/\bkol(?:ata|ite|a|i)\b|\bavtomobil|\bautomobil/u', $norm) === 1) {
+        return 'b';
+    }
+
+    return null;
 }
 
 /**

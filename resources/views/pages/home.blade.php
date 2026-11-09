@@ -35,7 +35,7 @@
       <a href="{{ route('category', 'a2-kategorija') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A2</div><div class="cat-desc">Мотоцикл средна класа до 35kW</div></a>
       <a href="{{ route('category', 'a1-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div><div class="cat-label">A1</div><div class="cat-desc">Лесен мотоцикл до 125cc</div></a>
       <a href="{{ route('category', 'am-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-bicycle" aria-hidden="true"></i></div><div class="cat-label">AM</div><div class="cat-desc">Мопед</div></a>
-      <a href="{{ route('category', 'b-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б</div><div class="cat-desc">Патнички автомобил</div></a>
+      <a href="{{ route('category', 'b-kategorija') }}" class="cat-card reveal"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б</div><div class="cat-desc">Автомобил</div></a>
       <a href="{{ route('category', 'b-automatik') }}" class="cat-card reveal reveal-delay-1"><div class="cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div><div class="cat-label">Б автоматик</div><div class="cat-desc">Автоматски менувач</div></a>
       <a href="{{ route('category', 'be-kategorija') }}" class="cat-card reveal reveal-delay-2"><div class="cat-icon"><i class="fa-solid fa-truck-pickup" aria-hidden="true"></i></div><div class="cat-label">БE</div><div class="cat-desc">Автомобил со приколка</div></a>
       <a href="{{ route('category', 'c-kategorija') }}" class="cat-card reveal reveal-delay-3"><div class="cat-icon"><i class="fa-solid fa-truck" aria-hidden="true"></i></div><div class="cat-label">Ц</div><div class="cat-desc">Камион</div></a>
@@ -123,41 +123,6 @@
   </div>
 </section>
 
-<!-- ── Why Choose Us ─────────────────────────────────────────────── -->
-<section style="background:var(--bg-alt);">
-  <div class="container">
-    <div class="section-tag">Зошто Нас</div>
-    <h2 class="section-heading">Разликата ја чувствувате<br>уште на прв час</h2>
-    <p class="section-sub">Нашиот пристап е индивидуален, стрплив и ориентиран кон вашиот успех.</p>
-    <div class="why-grid">
-      <div class="why-card reveal">
-        <div class="why-num">01</div>
-        <div class="why-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></div>
-        <h3>Искусни инструктори</h3>
-        <p>12 лиценцирани инструктори со долгогодишно педагошко искуство и стрпение за секој кандидат.</p>
-      </div>
-      <div class="why-card reveal reveal-delay-1">
-        <div class="why-num">02</div>
-        <div class="why-icon"><i class="fa-solid fa-car-burst" aria-hidden="true"></i></div>
-        <h3>Модерна флота</h3>
-        <p>Возила со двојни педали и сите современи безбедносни системи за максимална безбедност.</p>
-      </div>
-      <div class="why-card reveal reveal-delay-2">
-        <div class="why-num">03</div>
-        <div class="why-icon"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
-        <h3>Флексибилно плаќање</h3>
-        <p>Плаќање на рати без камата и без скриени дополнителни трошоци — транспарентни цени.</p>
-      </div>
-      <div class="why-card reveal reveal-delay-3">
-        <div class="why-num">04</div>
-        <div class="why-icon"><i class="fa-solid fa-laptop" aria-hidden="true"></i></div>
-        <h3>Е-Тест подготовка</h3>
-        <p>Пристап до официјалната платформа за практикување на теоретскиот испит онлајн.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ── CTA Banner ─────────────────────────────────────────────────── -->
 <div class="cta-banner">
   <div class="container">
@@ -174,52 +139,57 @@
 </div>
 
 <!-- ── Blog Preview ─────────────────────────────────────────────── -->
-<section>
+<section class="home-news">
   <div class="container">
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:48px;">
+    <div class="home-news-head">
       <div>
         <div class="section-tag">Блог & Новости</div>
         <h2 class="section-heading mb-0">Корисни информации<br>за возачи</h2>
       </div>
       <a href="{{ route('blog') }}" class="btn btn-outline-dark">Сите написи <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
     </div>
-    <div class="blog-grid">
-      <article class="blog-card reveal">
-        <a href="{{ route('blog.show', 'potvrda-za-motocikl-do-125cc-so-b-kategorija-shto-treba-da-znaete') }}" class="blog-thumb">
+
+    <div class="home-news-board">
+      <article class="home-news-lead reveal">
+        <a href="{{ route('blog.show', 'potvrda-za-motocikl-do-125cc-so-b-kategorija-shto-treba-da-znaete') }}" class="home-news-media">
           <img src="{{ asset('images/blog/potvrda-za-motocikl-do-125cc-so-b-kategorija-shto-treba-da-znaete.jpg') }}" alt="Потврда за мотоцикл до 125cc со Б категорија">
-          <span class="blog-tag">Блог</span>
         </a>
-        <div class="blog-body">
+        <div class="home-news-body">
+          <div class="home-news-kicker"><span>01</span> Блог</div>
           <div class="blog-meta"><span><i class="fa-regular fa-calendar" aria-hidden="true"></i> 12.06.2026</span></div>
           <h3><a href="{{ route('blog.show', 'potvrda-za-motocikl-do-125cc-so-b-kategorija-shto-treba-da-znaete') }}">Потврда за мотоцикл до 125cc со Б категорија – што треба да знаете?</a></h3>
           <p>Со Б категорија над 5 години и возраст над 23, можно е да се добие потврда за мотор до 125 cc.</p>
           <a href="{{ route('blog.show', 'potvrda-za-motocikl-do-125cc-so-b-kategorija-shto-treba-da-znaete') }}" class="blog-link">Прочитај повеќе <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </div>
       </article>
-      <article class="blog-card reveal reveal-delay-1">
-        <a href="{{ route('blog.show', 'kako-da-ja-dobiete-vozachkata-dozvola-za-motor-vo-makedonija') }}" class="blog-thumb">
+
+      <div class="home-news-row">
+      <article class="home-news-card reveal reveal-delay-1">
+        <a href="{{ route('blog.show', 'kako-da-ja-dobiete-vozachkata-dozvola-za-motor-vo-makedonija') }}" class="home-news-media">
           <img src="{{ asset('images/blog/kako-da-ja-dobiete-vozachkata-dozvola-za-motor-vo-makedonija.png') }}" alt="Возачка дозвола за мотор">
-          <span class="blog-tag">Блог</span>
         </a>
-        <div class="blog-body">
+        <div class="home-news-body">
+          <div class="home-news-kicker"><span>02</span> Блог</div>
           <div class="blog-meta"><span><i class="fa-regular fa-calendar" aria-hidden="true"></i> 02.06.2026</span></div>
           <h3><a href="{{ route('blog.show', 'kako-da-ja-dobiete-vozachkata-dozvola-za-motor-vo-makedonija') }}">Како да ја добиете возачката дозвола за мотор во Македонија?</a></h3>
           <p>Услови, теорија, практика и испит за возачка дозвола за мотор.</p>
           <a href="{{ route('blog.show', 'kako-da-ja-dobiete-vozachkata-dozvola-za-motor-vo-makedonija') }}" class="blog-link">Прочитај повеќе <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </div>
       </article>
-      <article class="blog-card reveal reveal-delay-2">
-        <a href="{{ route('blog.show', '5-soveti-za-uspeshno-polaganje-na-vozachki-ispit') }}" class="blog-thumb">
+
+      <article class="home-news-card reveal reveal-delay-2">
+        <a href="{{ route('blog.show', '5-soveti-za-uspeshno-polaganje-na-vozachki-ispit') }}" class="home-news-media">
           <img src="{{ asset('images/blog/5-soveti-za-uspeshno-polaganje-na-vozachki-ispit.jpg') }}" alt="5 совети за возачки испит">
-          <span class="blog-tag">Блог</span>
         </a>
-        <div class="blog-body">
+        <div class="home-news-body">
+          <div class="home-news-kicker"><span>03</span> Блог</div>
           <div class="blog-meta"><span><i class="fa-regular fa-calendar" aria-hidden="true"></i> 04.03.2026</span></div>
           <h3><a href="{{ route('blog.show', '5-soveti-za-uspeshno-polaganje-na-vozachki-ispit') }}">5 совети за успешно полагање на возачки испит</a></h3>
           <p>Практични совети за подготовка и полагање на возачкиот испит.</p>
           <a href="{{ route('blog.show', '5-soveti-za-uspeshno-polaganje-na-vozachki-ispit') }}" class="blog-link">Прочитај повеќе <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </div>
       </article>
+      </div>
     </div>
   </div>
 </section>

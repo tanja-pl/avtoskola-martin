@@ -15,9 +15,9 @@
   <div class="container etest-jump-inner">
     <a href="#testovi">Тестови</a>
     <a href="#odgovori">Со одговори</a>
+    <a href="#demo">Демо</a>
     <a href="#kategorii-prasanja">Категории</a>
     <a href="#priracnik">Прирачник</a>
-    <a href="#demo">Демо</a>
   </div>
 </nav>
 
@@ -60,43 +60,50 @@
         </div>
       </div>
 
+      <div id="demo" class="etest-demo reveal">
+        <div>
+          <div class="section-tag">Вежба</div>
+          <h2>Тестирај се онлајн, демо верзија</h2>
+          <p>Официјална демо платформа за електронски тест. Вежбајте го форматот пред полагање во испитен центар.</p>
+        </div>
+        <a class="btn btn-yellow btn-lg" href="http://etest.amsm.mk/" target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-play" aria-hidden="true"></i> Отвори демо
+        </a>
+      </div>
+
       <div id="kategorii-prasanja" class="etest-block reveal">
         <div class="section-tag">Учење</div>
         <h2>Прашања кои треба да се учат за одредена категорија</h2>
         <p>Опсегот на прашања според официјалниот фонд. Отворете ја категоријата кај нас за услови, часови и испит.</p>
         <div class="etest-cat-study">
-          <a class="etest-cat-row" href="{{ route('category', 'b-kategorija') }}">
+          <div class="etest-cat-row">
             <div class="etest-cat-icon"><i class="fa-solid fa-car" aria-hidden="true"></i></div>
             <div>
               <h3>Б категорија</h3>
               <p>Од 1 до 75 и од 91 до 636 прашање · фонд 621</p>
             </div>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </a>
-          <a class="etest-cat-row" href="{{ route('category', 'c-kategorija') }}">
+          </div>
+          <div class="etest-cat-row">
             <div class="etest-cat-icon"><i class="fa-solid fa-truck" aria-hidden="true"></i></div>
             <div>
               <h3>Ц категорија</h3>
               <p>Од 637 до 756 прашање · фонд 120</p>
             </div>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </a>
-          <a class="etest-cat-row" href="{{ route('category', 'd-kategorija') }}">
+          </div>
+          <div class="etest-cat-row">
             <div class="etest-cat-icon"><i class="fa-solid fa-bus" aria-hidden="true"></i></div>
             <div>
               <h3>Д категорија</h3>
               <p>Од 757 до 936 прашање · фонд 180</p>
             </div>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </a>
-          <a class="etest-cat-row" href="{{ route('category', 'a-kategorija') }}">
+          </div>
+          <div class="etest-cat-row">
             <div class="etest-cat-icon"><i class="fa-solid fa-motorcycle" aria-hidden="true"></i></div>
             <div>
               <h3>A / A1 / A2</h3>
               <p>Фонд за учење: 553 прашања · тестот има 28 прашања</p>
             </div>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </a>
+          </div>
         </div>
       </div>
     </div>
@@ -129,21 +136,6 @@
         </div>
       </div>
     </aside>
-  </div>
-</section>
-
-<section id="demo" class="etest-demo-section">
-  <div class="container">
-    <div class="etest-demo reveal">
-      <div>
-        <div class="section-tag">Вежба</div>
-        <h2>Тестирај се онлајн, демо верзија</h2>
-        <p>Официјална демо платформа за електронски тест. Вежбајте го форматот пред полагање во испитен центар.</p>
-      </div>
-      <a class="btn btn-yellow btn-lg" href="http://etest.amsm.mk/" target="_blank" rel="noopener noreferrer">
-        <i class="fa-solid fa-play" aria-hidden="true"></i> Отвори демо
-      </a>
-    </div>
   </div>
 </section>
 
