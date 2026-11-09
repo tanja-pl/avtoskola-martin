@@ -16,6 +16,8 @@ use function App\Support\Chat\checkRateLimits;
 use function App\Support\Chat\clientIp;
 use function App\Support\Chat\ensureContactAsk;
 use function App\Support\Chat\ensureLeadConfirmation;
+use function App\Support\Chat\ensurePaymentSlipNotice;
+use function App\Support\Chat\ensureSchoolPaymentNotice;
 use function App\Support\Chat\ensureUnknownAsksForContact;
 use function App\Support\Chat\evaluateLead;
 use function App\Support\Chat\friendlyError;
@@ -23,11 +25,14 @@ use function App\Support\Chat\isUnknownAnswer;
 use function App\Support\Chat\loadConfig;
 use function App\Support\Chat\logUnanswered;
 use function App\Support\Chat\monthlyBudgetExceeded;
+use function App\Support\Chat\omitPaymentSlipDenial;
 use function App\Support\Chat\omitPhotoDenial;
+use function App\Support\Chat\paymentSlipImagesForMessage;
 use function App\Support\Chat\persistLead;
 use function App\Support\Chat\recordUsage;
 use function App\Support\Chat\retrieveRelevantKnowledge;
 use function App\Support\Chat\sanitizeHistory;
+use function App\Support\Chat\schoolPaymentImageForMessage;
 use function App\Support\Chat\steerMissingDetailsToLead;
 use function App\Support\Chat\vehicleImagesForMessage;
 
@@ -96,8 +101,11 @@ class ChatController extends Controller
         }
 
         $retrieved = retrieveRelevantKnowledge(resource_path('knowledge'), $retrievalQuery, $config);
-        $images = vehicleImagesForMessage($message, $cleanHistory);
-        $systemPrompt = buildSystemPrompt($retrieved, $lead, $images !== []);
+        $vehicleImages = vehicleImagesForMessage($message, $cleanHistory);
+        $paymentSlips = paymentSlipImagesForMessage($message);
+        $schoolSlip = schoolPaymentImageForMessage($message);
+        $images = array_merge($vehicleImages, $paymentSlips, $schoolSlip);
+        $systemPrompt = buildSystemPrompt($retrieved, $lead, $vehicleImages !== [], $paymentSlips !== [], $schoolSlip !== []);
 
         $messages = [['role' => 'system', 'content' => $systemPrompt]];
         foreach ($cleanHistory as $h) {
@@ -107,22 +115,21 @@ class ChatController extends Controller
 
         $result = $this->openAi->complete($config, $messages);
         if (($result['ok'] ?? false) !== true) {
-            $reply = ensureLeadConfirmation(friendlyError(), $lead);
+            $reply = ensureSchoolPaymentNotice(
+                ensurePaymentSlipNotice(ensureLeadConfirmation(friendlyError(), $lead), $paymentSlips),
+                $schoolSlip,
+            );
             $conversation = $this->storeExchange($request, $message, $reply, $lead, $clientIp);
 
             return $this->chatJson([
                 'error' => 'ai_unavailable',
                 'reply' => $reply,
+                'images' => $images,
             ], 502, $conversation);
         }
 
         if (isset($result['usage']) && is_array($result['usage'])) {
             recordUsage($result['usage'], $config);
-        }
-
-        $unknown = isUnknownAnswer($result['reply']);
-        if ($unknown) {
-            logUnanswered($message, $clientIp);
         }
 
         $reply = ensureLeadConfirmation(
@@ -136,11 +143,17 @@ class ChatController extends Controller
             ),
             $lead,
         );
+        $reply = omitPaymentSlipDenial(omitPhotoDenial($reply, $images), array_merge($paymentSlips, $schoolSlip));
         if (assistantAskedForContact($reply)) {
             $lead['asked'] = true;
         }
 
-        $reply = omitPhotoDenial($reply, $images);
+        $unknown = $paymentSlips === [] && $schoolSlip === [] && isUnknownAnswer($reply);
+        if ($unknown) {
+            logUnanswered($message, $clientIp);
+        }
+
+        $reply = ensureSchoolPaymentNotice(ensurePaymentSlipNotice($reply, $paymentSlips), $schoolSlip);
         $conversation = $this->storeExchange($request, $message, $reply, $lead, $clientIp);
 
         return $this->chatJson([

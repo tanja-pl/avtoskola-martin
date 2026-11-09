@@ -8,14 +8,14 @@
             <div class="breadcrumb"><a href="{{ route('home') }}">Почетна</a><i class="fa-solid fa-chevron-right"></i><a
                     href="{{ route('categories') }}">Категории</a><i class="fa-solid fa-chevron-right"></i><span>Категорија
                     B</span></div>
-            <h1>Категорија Б — патнички автомобил</h1>
+            <h1>Категорија Б — автомобил</h1>
             <p>Обука за Б категорија: услови, возила, инструктори, теорија, практика и испит.</p>
         </div>
     </div>
     <section>
         <div class="container cat-page">
             <div class="cat-page-main">
-                <p class="cat-lead">Најпопуларната категорија. Патнички автомобил со рачен менувач — Peugeot, Citroen, Fiat,
+                <p class="cat-lead">Најпопуларната категорија. Автомобил со рачен менувач — Peugeot, Citroen, Fiat,
                     Opel, Renault. Возилата се со серво волан, клима и ABS.</p>
                 <h2>Услови и потребни документи</h2>
                 <div class="cat-req-grid">
@@ -58,25 +58,25 @@
                 <h2>Инструктори</h2>
                 <div class="cat-people cat-instructors is-visible">
                     @foreach ([
-                        ['stefan.png', 'Стефан Трајановски'],
-                        ['miki.png', 'Мики Трајановски'],
-                        ['ljupco.png', 'Љупчо Костенцовски'],
-                        ['martin1.png', 'Мартин Трајановски'],
-                        ['igor.png', 'Игор Вичишки'],
-                        ['zoki.png', 'Зоран Крстевски'],
-                        ['sase.jpg', 'Сашо Тодоровски'],
-                        ['martina.jpg', 'Мартина Крстевска'],
-                        ['cece.jpg', 'Светлана Спасовска'],
-                        ['bube.jpg', 'Љупка Илијоска'],
-                        ['liljana.jpg', 'Лилјана Тодорова'],
-                    ] as [$file, $name])
+                        ['stefan.png', 'Стефан Трајановски', 'А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ'],
+                        ['miki.png', 'Мики Трајановски', 'А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ'],
+                        ['ljupco.png', 'Љупчо Костенцовски', 'А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ'],
+                        ['martin1.png', 'Мартин Трајановски', 'А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ'],
+                        ['igor.png', 'Игор Вичишки', 'Б'],
+                        ['zoki.png', 'Зоран Крстевски', 'Б'],
+                        ['sase.jpg', 'Сашо Тодоровски', 'Б'],
+                        ['martina.jpg', 'Мартина Крстевска', 'Б'],
+                        ['cece.jpg', 'Светлана Спасовска', 'Б'],
+                        ['bube.jpg', 'Љупка Илијоска', 'Б'],
+                        ['liljana.jpg', 'Лилјана Тодорова', 'А, А1, А2, Б'],
+                    ] as [$file, $name, $categories])
                         <article class="cat-person">
                             <div class="cat-instructor-photo">
-                                <img src="{{ asset('images/instructors/'.$file) }}" alt="{{ $name }}" 
+                                <img src="{{ asset('images/instructors/'.$file) }}" alt="{{ $name }}"
                                     onerror="this.style.display='none'">
                             </div>
                             <h3>{{ $name }}</h3>
-                            <p>Инструктор</p>
+                            <p>Категории {{ $categories }}</p>
                         </article>
                     @endforeach
                 </div>
@@ -107,7 +107,7 @@
                 <div class="cat-price">
                     <div class="label">Цена на обука</div>
                     <div class="amount">32.000 денари</div>
-                    <p>Можност за плаќање на рати. Автоматски менувач: 38.000 денари. За финансирање: Билјана, 070-363-449.
+                    <p>Можност за плаќање на рати. Автоматски менувач: 36.000 денари. За финансирање: Билјана, 070-363-449.
                     </p>
                     <a href="{{ route('contact') }}" class="btn btn-outline"
                         style="width:100%;justify-content:center;margin-top:10px;">Контакт</a>

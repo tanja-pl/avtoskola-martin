@@ -29,7 +29,7 @@
                             alt="SEAT Ibiza со приколка">
                         <div class="cat-vehicle-body">
                             <h3>SEAT Ibiza, 2020</h3>
-                            <p>Патничко возило со приколка, серво волан, клима и ABS, за обука и полагање на BE.</p>
+                            <p>Возило со приколка, серво волан, клима и ABS, за обука и полагање на BE.</p>
                         </div>
                     </article>
                 </div>
@@ -38,12 +38,12 @@
                     <article class="cat-person"><img src="{{ asset('images/instructors/martin1.png') }}"
                             alt="Мартин Трајановски">
                         <h3>Мартин Трајановски</h3>
-                        <p>Инструктор за БE</p>
+                        <p>Категории А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/stefan.png') }}"
                             alt="Стефан Трајановски">
                         <h3>Стефан Трајановски</h3>
-                        <p>Инструктор за БE</p>
+                        <p>Категории А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ</p>
                     </article>
                 </div>
                 <h2>Обука</h2>

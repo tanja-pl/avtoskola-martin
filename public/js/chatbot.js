@@ -219,39 +219,78 @@
     return { dock, nudge, launcher, panel, messages, input, sendBtn, closeBtn };
   }
 
-  function vehiclePhotos(images) {
+  function chatImages(images) {
     if (!Array.isArray(images)) return [];
     return images.filter((photo) => {
       if (!photo || typeof photo.url !== 'string') return false;
       try {
         const url = new URL(photo.url, window.location.origin);
-        return url.origin === window.location.origin
-          && url.pathname.indexOf('/images/vehicles/') === 0
-          && url.pathname.indexOf('..') === -1;
+        const path = url.pathname;
+        const allowed = path.indexOf('/images/vehicles/') === 0 || path.indexOf('/images/test/') === 0 || path.indexOf('/images/transactions/') === 0;
+        return url.origin === window.location.origin && allowed && path.indexOf('..') === -1;
       } catch (_) {
         return false;
       }
     });
   }
 
+  function openSlip(url, alt) {
+    let overlay = document.getElementById('amChatLightbox');
+    if (!overlay) {
+      overlay = el('div', 'am-chat-lightbox', {
+        id: 'amChatLightbox',
+        role: 'dialog',
+        'aria-label': 'Уплатница'
+      });
+      overlay.addEventListener('click', () => overlay.classList.remove('open'));
+      document.body.appendChild(overlay);
+    }
+    overlay.replaceChildren();
+    const img = el('img', 'am-chat-lightbox-img', { src: url, alt: alt || 'Уплатница' });
+    img.addEventListener('click', (event) => event.stopPropagation());
+    overlay.appendChild(img);
+    overlay.classList.add('open');
+  }
+
   function appendMessage(messagesEl, role, text, isError, images) {
     const msg = el('div', 'am-chat-msg ' + (isError ? 'error' : role === 'user' ? 'user' : 'bot'));
     msg.textContent = text;
-    const photos = !isError && role === 'bot' ? vehiclePhotos(images) : [];
-    if (photos.length) {
-      const wrap = el('div', 'am-chat-photos' + (photos.length === 1 ? ' am-chat-photos--single' : ''));
-      photos.forEach((photo) => {
-        wrap.appendChild(el('img', 'am-chat-photo', {
-          src: photo.url,
-          alt: typeof photo.alt === 'string' && photo.alt ? photo.alt : 'Возило за обука',
-          loading: 'lazy'
-        }));
-      });
-      msg.appendChild(wrap);
+    const photos = !isError && role === 'bot' ? chatImages(images) : [];
+    const documents = photos.filter((photo) => photo.kind === 'document');
+    const vehicles = photos.filter((photo) => photo.kind !== 'document');
+    if (documents.length) {
+      msg.classList.add('am-chat-msg--documents');
+      const panel = document.getElementById('amChatPanel');
+      if (panel) panel.classList.add('has-documents');
     }
+    appendPhotoGroup(msg, vehicles, false);
+    appendPhotoGroup(msg, documents, true);
     messagesEl.appendChild(msg);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return msg;
+  }
+
+  function appendPhotoGroup(msg, photos, documents) {
+    if (!photos.length) return;
+    const wrap = el('div', 'am-chat-photos' + (documents ? ' am-chat-photos--documents' : (photos.length === 1 ? ' am-chat-photos--single' : '')));
+    photos.forEach((photo) => {
+      const alt = typeof photo.alt === 'string' && photo.alt ? photo.alt : (documents ? 'Уплатница' : 'Возило за обука');
+      const img = el('img', 'am-chat-photo' + (documents ? ' am-chat-photo--document' : ''), {
+        src: photo.url,
+        alt: alt,
+        loading: 'lazy'
+      });
+      if (documents) {
+        const figure = el('figure', 'am-chat-slip');
+        figure.appendChild(el('figcaption', 'am-chat-slip-caption', { text: alt }));
+        img.addEventListener('click', () => openSlip(photo.url, alt));
+        figure.appendChild(img);
+        wrap.appendChild(figure);
+      } else {
+        wrap.appendChild(img);
+      }
+    });
+    msg.appendChild(wrap);
   }
 
   function showSuggestions(messagesEl, onPick) {
@@ -404,7 +443,13 @@
     ui.input.addEventListener('input', () => autoResize(ui.input));
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen) setOpen(false);
+      if (e.key !== 'Escape') return;
+      const overlay = document.getElementById('amChatLightbox');
+      if (overlay && overlay.classList.contains('open')) {
+        overlay.classList.remove('open');
+        return;
+      }
+      if (isOpen) setOpen(false);
     });
   }
 

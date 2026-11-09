@@ -98,10 +98,10 @@
       <div class="cat-detail-card reveal">
         <div class="cat-detail-header">
           <div class="cat-detail-icon-wrap"><i class="fa-solid fa-car" style="color:#FDDE1F;"></i></div>
-          <div><h3>Б</h3><p>Патнички автомобил</p></div>
+          <div><h3>Б</h3><p>Автомобил</p></div>
         </div>
         <div class="cat-detail-body">
-          <p>Најпопуларната категорија. Дозволува управување со патнички автомобили до 3.500 kg со рачен менувач.</p>
+          <p>Најпопуларната категорија. Дозволува управување со автомобили до 3.500 kg со рачен менувач.</p>
           <div class="cat-reqs">
             <div class="cat-req-item"><i class="fa-solid fa-check"></i>Минимална возраст: 18 години</div>
             <div class="cat-req-item"><i class="fa-solid fa-check"></i>Теоретски испит (Е-Тест)</div>

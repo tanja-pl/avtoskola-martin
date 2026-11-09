@@ -47,17 +47,17 @@
                     <article class="cat-person"><img src="{{ asset('images/instructors/martin1.png') }}"
                             alt="Мартин Трајановски" onerror="this.style.display='none'">
                         <h3>Мартин Трајановски</h3>
-                        <p>Инструктор за A, A2, Б, Ц, ЦE и Д</p>
+                        <p>Категории А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/stefan.png') }}"
                             alt="Стефан Трајановски" onerror="this.style.display='none'">
                         <h3>Стефан Трајановски</h3>
-                        <p>Инструктор за A, A2, Б, Ц, ЦE и Д</p>
+                        <p>Категории А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ</p>
                     </article>
                     <article class="cat-person"><img src="{{ asset('images/instructors/miki.png') }}" alt="Мики Трајановски"
                             onerror="this.style.display='none'">
                         <h3>Мики Трајановски</h3>
-                        <p>Инструктор за A, A1, A2, Б</p>
+                        <p>Категории А, А1, А2, Б, БЕ, Ц, Ц1, Ц1Е, ЦЕ, Д, Д1, Д1Е, ДЕ</p>
                     </article>
                 </div>
                 <h2>Обука</h2>
