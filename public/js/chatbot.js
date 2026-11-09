@@ -252,7 +252,22 @@
     overlay.classList.add('open');
   }
 
-  function appendMessage(messagesEl, role, text, isError, images) {
+  function chatDownloads(downloads) {
+    if (!Array.isArray(downloads)) return [];
+    return downloads.filter((file) => {
+      if (!file || typeof file.url !== 'string' || typeof file.label !== 'string' || file.label === '') return false;
+      try {
+        const url = new URL(file.url, window.location.origin);
+        const path = url.pathname;
+        const allowed = /^\/documents\/consent\/[^/]+\.docx?$/i.test(path);
+        return url.origin === window.location.origin && allowed && path.indexOf('..') === -1;
+      } catch (_) {
+        return false;
+      }
+    });
+  }
+
+  function appendMessage(messagesEl, role, text, isError, images, downloads) {
     const msg = el('div', 'am-chat-msg ' + (isError ? 'error' : role === 'user' ? 'user' : 'bot'));
     msg.textContent = text;
     const photos = !isError && role === 'bot' ? chatImages(images) : [];
@@ -265,6 +280,7 @@
     }
     appendPhotoGroup(msg, vehicles, false);
     appendPhotoGroup(msg, documents, true);
+    appendDownloads(msg, !isError && role === 'bot' ? downloads : []);
     messagesEl.appendChild(msg);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return msg;
@@ -289,6 +305,21 @@
       } else {
         wrap.appendChild(img);
       }
+    });
+    msg.appendChild(wrap);
+  }
+
+  function appendDownloads(msg, downloads) {
+    const files = chatDownloads(downloads);
+    if (!files.length) return;
+    const wrap = el('div', 'am-chat-downloads');
+    files.forEach((file) => {
+      const link = el('a', 'am-chat-download', {
+        href: file.url,
+        download: typeof file.filename === 'string' && file.filename ? file.filename : '',
+        text: file.label
+      });
+      wrap.appendChild(link);
     });
     msg.appendChild(wrap);
   }
@@ -387,7 +418,7 @@
           (data && (data.reply || data.error === 'not_configured' && data.reply)) ||
           'Извинете, моментално имам проблем со одговарањето. Обидете се повторно за момент.';
 
-        appendMessage(ui.messages, 'bot', reply, !res.ok && !data?.reply, data && data.images);
+        appendMessage(ui.messages, 'bot', reply, !res.ok && !data?.reply, data && data.images, data && data.downloads);
 
         if (data && typeof data.conversation_id === 'string' && /^[0-9a-f-]{36}$/i.test(data.conversation_id)) {
           try {

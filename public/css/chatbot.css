@@ -452,6 +452,31 @@
   margin: 0 0 4px;
 }
 
+.am-chat-downloads {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.am-chat-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--am-blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.am-chat-download:hover {
+  background: var(--am-blue-dark);
+  color: #fff;
+}
+
 .am-chat-photos--documents .am-chat-photo {
   height: auto;
   max-height: none;
