@@ -6,7 +6,8 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Разговори') — Автошкола Мартин</title>
-  <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+  <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
