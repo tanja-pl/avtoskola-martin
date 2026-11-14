@@ -71,11 +71,11 @@
       <div class="contact-form-wrap reveal">
         <h3>Испратете порака</h3>
         <p>Пополнете ја формата и ние ќе ве контактираме во рок од 24 часа.</p>
-        <form id="contactForm" method="post" action="{{ route('contact.store') }}" novalidate>
+        <form id="contactForm" method="post" action="{{ route('contact.store') }}" data-challenge="{{ route('contact.challenge') }}" novalidate>
           @csrf
           <div class="form-hp" aria-hidden="true">
             <label for="cWebsite">Website</label>
-            <input type="text" id="cWebsite" name="website" tabindex="-1" autocomplete="off">
+            <input type="text" id="cWebsite" name="website" tabindex="-1" autocomplete="new-password">
           </div>
           <div class="form-row">
             <div class="form-group"><label for="cName">Име и презиме <span style="color:#FDDE1F;">*</span></label><input type="text" id="cName" name="name" placeholder="Вашето полно име" required></div>
@@ -86,17 +86,26 @@
             <label for="cSubject">Предмет</label>
             <select id="cSubject" name="subject">
               <option value="">Изберете предмет</option>
-              <option>Запишување / Регистрација</option>
-              <option>Информации за категории</option>
-              <option>Ценовник и плаќање</option>
-              <option>Е-Тест</option>
-              <option>Друго прашање</option>
+              @foreach (\App\Http\Requests\ContactRequest::SUBJECTS as $subject)
+                <option>{{ $subject }}</option>
+              @endforeach
             </select>
           </div>
           <div class="form-group"><label for="cMsg">Порака <span style="color:#FDDE1F;">*</span></label><textarea id="cMsg" name="message" rows="5" placeholder="Вашето прашање или барање..." required></textarea></div>
+          <div class="form-group human-check">
+            <label for="cHuman">Потврдете дека сте човек <span style="color:#FDDE1F;">*</span></label>
+            <div class="human-check-box">
+              <div class="human-check-visual" id="humanCheckVisual" aria-hidden="true">{!! $humanChallenge['image'] !!}</div>
+              <button type="button" class="human-check-refresh" id="humanCheckRefresh" aria-label="Нова проверка">
+                <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+              </button>
+              <input type="text" id="cHuman" name="human_answer" inputmode="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="8" placeholder="Внесете го кодот" required aria-describedby="humanCheckHint">
+            </div>
+            <input type="hidden" name="human_token" id="cHumanToken" value="{{ $humanChallenge['token'] }}">
+          </div>
           <div class="form-group" style="margin-bottom:28px;">
             <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
-              <input type="checkbox" required style="width:18px;height:18px;margin-top:2px;accent-color:var(--blue);">
+              <input type="checkbox" name="consent" value="1" required style="width:18px;height:18px;margin-top:2px;accent-color:var(--blue);">
               <span style="font-size:.875rem;color:var(--mid);">Се согласувам со обработката на личните податоци.</span>
             </label>
           </div>

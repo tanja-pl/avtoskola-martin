@@ -121,10 +121,82 @@ function jsonHeaders() {
   const form = document.getElementById('contactForm');
   if (!form) return;
   const btn = form.querySelector('button[type="submit"]');
+  const refreshBtn = form.querySelector('#humanCheckRefresh');
+
+  function applyChallenge(challenge) {
+    if (!challenge || !challenge.token) return;
+    const token = form.querySelector('#cHumanToken');
+    const visual = form.querySelector('#humanCheckVisual');
+    const answer = form.querySelector('#cHuman');
+    if (token) {
+      token.value = challenge.token;
+      token.defaultValue = challenge.token;
+    }
+    if (visual && challenge.image) {
+      visual.innerHTML = challenge.image;
+    }
+    if (answer) {
+      answer.value = '';
+    }
+  }
+
+  function errorText(data) {
+    if (!data) return '';
+    if (data.message) return data.message;
+    if (data.errors) {
+      const first = Object.values(data.errors).flat()[0];
+      if (first) return first;
+    }
+    return '';
+  }
+
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', async () => {
+      if (refreshBtn.disabled) return;
+      refreshBtn.disabled = true;
+      try {
+        const res = await fetch(form.dataset.challenge, {
+          method: 'POST',
+          headers: jsonHeaders(),
+          body: '{}'
+        });
+        let data = null;
+        try {
+          data = await res.json();
+        } catch (_) {
+          data = null;
+        }
+        if (res.ok && data && data.challenge) {
+          applyChallenge(data.challenge);
+          const answer = form.querySelector('#cHuman');
+          if (answer) answer.focus();
+        } else {
+          showToast(errorText(data) || 'Проверката не можеше да се обнови. Освежете ја страницата.', true);
+        }
+      } catch (_) {
+        showToast('Проверката не можеше да се обнови. Проверете ја врската и обидете се повторно.', true);
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (btn && btn.disabled) return;
+
+    const answer = form.querySelector('#cHuman');
+    const consent = form.querySelector('input[name="consent"]');
+    if (!answer || answer.value.trim().length < 4) {
+      showToast('Потврдете дека сте човек.', true);
+      if (answer) answer.focus();
+      return;
+    }
+    if (!consent || !consent.checked) {
+      showToast('Потребна е согласност за обработка на личните податоци.', true);
+      if (consent) consent.focus();
+      return;
+    }
 
     const payload = {
       name: (form.querySelector('#cName') || {}).value || '',
@@ -132,7 +204,10 @@ function jsonHeaders() {
       email: (form.querySelector('#cEmail') || {}).value || '',
       subject: (form.querySelector('#cSubject') || {}).value || '',
       message: (form.querySelector('#cMsg') || {}).value || '',
-      website: (form.querySelector('#cWebsite') || {}).value || ''
+      website: (form.querySelector('#cWebsite') || {}).value || '',
+      consent: true,
+      human_token: (form.querySelector('#cHumanToken') || {}).value || '',
+      human_answer: answer.value || ''
     };
 
     if (btn) {
@@ -140,7 +215,7 @@ function jsonHeaders() {
     }
 
     try {
-      const res = await fetch('/kontakt', {
+      const res = await fetch(form.action, {
         method: 'POST',
         headers: jsonHeaders(),
         body: JSON.stringify(payload)
@@ -155,9 +230,15 @@ function jsonHeaders() {
       if (res.ok && data && data.ok) {
         showToast(data.message || 'Вашата порака е испратена! Ќе ве контактираме наскоро.');
         form.reset();
+        if (data.challenge) {
+          applyChallenge(data.challenge);
+        }
       } else {
+        if (data && data.challenge) {
+          applyChallenge(data.challenge);
+        }
         showToast(
-          (data && data.message) || 'Пораката не можеше да се испрати. Јавете се на 02-3114-065.',
+          errorText(data) || 'Пораката не можеше да се испрати. Јавете се на 02-3114-065.',
           true
         );
       }
