@@ -35,7 +35,12 @@ Route::get('/video', [PageController::class, 'videos'])->name('videos');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/kontakt', [ContactController::class, 'show'])->name('contact');
-Route::post('/kontakt', [ContactController::class, 'store'])->middleware('throttle:8,60')->name('contact.store');
+Route::post('/kontakt/proverka', [ContactController::class, 'refresh'])
+    ->middleware('throttle:30,10')
+    ->name('contact.challenge');
+Route::post('/kontakt', [ContactController::class, 'store'])
+    ->middleware('throttle:contact-form')
+    ->name('contact.store');
 Route::redirect('/registracija', '/kontakt');
 Route::get('/{slug}', [PageController::class, 'category'])
     ->whereIn('slug', $categories)
